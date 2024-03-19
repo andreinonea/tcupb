@@ -1,8 +1,9 @@
 #include "tc.h"
+#include "utils.h"
 
 #include <DataFrame/Utils/DateTime.h>
 
-int add (int a, int b)
+INT_TYPE add (INT_TYPE a, INT_TYPE b)
 {
 	hmdf::DateTime dt {};
 	return a + b;
