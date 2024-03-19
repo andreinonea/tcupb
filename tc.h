@@ -1,7 +1,7 @@
 #ifndef UPB_TC_DUMMY_H_
 #define UPB_TC_DUMMY_H_
 
-#include "utils.h"
+#include "Utils.h"
 
 INT_TYPE add (INT_TYPE a, INT_TYPE b);
 

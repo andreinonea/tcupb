@@ -24,6 +24,7 @@ FetchContent_MakeAvailable(DataFrame)
 add_library ("${PROJECT_NAME}")
 target_sources ("${PROJECT_NAME}" PRIVATE
 	tc.cpp
+	Utils.cpp
 )
 
 target_link_libraries("${PROJECT_NAME}" PRIVATE
