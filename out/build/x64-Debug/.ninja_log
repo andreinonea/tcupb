@@ -1,0 +1,14 @@
+# ninja log v5
+14	845	7331005828133646	CMakeFiles/tcupb.dir/Utils.cpp.obj	f8d90878cc1f93e2
+4	495	7331044381412313	CMakeFiles/tcupb-cli.dir/cli.cpp.obj	687ba079777a741e
+496	716	7331044383072107	tcupb-cli.exe	3a99e10e35ac71b7
+3	970	7331005829383973	CMakeFiles/tcupb.dir/tc.cpp.obj	65984a517605665b
+38	793	7329085427410065	_deps/dataframe-build/CMakeFiles/DataFrame.dir/src/Utils/DateTime.cc.obj	29d93b3a982e36e2
+793	880	7329085428239996	_deps/dataframe-build/DataFrame.lib	c9510fd4e2015fb5
+970	1051	7331005830137680	tcupb.lib	8f97fe784ef96bc
+4	88	0	CMakeFiles/install.util	c9876d9b75d27dd2
+14	292	7331045242096058	CMakeFiles/tcupb.dir/Utils.cpp.obj	ec2612b201a92c16
+23	686	7331045245987316	CMakeFiles/tcupb-cli.dir/cli.cpp.obj	687ba079777a741e
+3	206	7331045665528877	CMakeFiles/tcupb.dir/tc.cpp.obj	f2cc928fefbb0c46
+207	286	7331045666160773	tcupb.lib	8f97fe784ef96bc
+13	605	7331045669464022	CMakeFiles/tcupb-cli.dir/cli.cpp.obj	687ba079777a741e
