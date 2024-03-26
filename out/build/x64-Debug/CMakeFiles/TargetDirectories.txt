@@ -1,7 +1,0 @@
-C:/Users/andra/source/repos/tcupb/out/build/x64-Debug/CMakeFiles/tcupb.dir
-C:/Users/andra/source/repos/tcupb/out/build/x64-Debug/CMakeFiles/tcupb-cli.dir
-C:/Users/andra/source/repos/tcupb/out/build/x64-Debug/CMakeFiles/edit_cache.dir
-C:/Users/andra/source/repos/tcupb/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
-C:/Users/andra/source/repos/tcupb/out/build/x64-Debug/CMakeFiles/list_install_components.dir
-C:/Users/andra/source/repos/tcupb/out/build/x64-Debug/CMakeFiles/install.dir
-C:/Users/andra/source/repos/tcupb/out/build/x64-Debug/CMakeFiles/install/local.dir
