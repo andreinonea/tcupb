@@ -4,59 +4,80 @@
 #include <vector>
 
 std::pair<std::vector<INT_TYPE>, std::vector<INT_TYPE>>
-get_ind (const std::vector<FP_TYPE> &vfp_arr, const std::vector<FP_TYPE> &vfp_time)
+get_ind(const std::vector<FP_TYPE> &arr, const std::vector<FP_TYPE> &time)
 {
-	INT_TYPE int_n = vfp_arr.size();
-	INT_TYPE int_s = vfp_time.size();
+	INT_TYPE n = arr.size();
+	INT_TYPE s = time.size();
 
-	std::vector<INT_TYPE> vint_left(int_n, 0);
-	std::vector<INT_TYPE> vint_right(int_n, 0);
+	std::vector<INT_TYPE> left(n, 0);
+	std::vector<INT_TYPE> right(n, 0);
 
-	BOOL_TYPE b_found;
-	INT_TYPE int_begin, int_end, int_k;
-	INT_TYPE int_j, int_i;
-	UINT_TYPE uint_ind = 0;
+	BOOL_TYPE found;
+	INT_TYPE begin, end, k;
+	INT_TYPE j, i;
+	UINT_TYPE ind = 0;
 
-	std::vector<FP_TYPE> vfp_tmp;
-	FP_TYPE fp_v;
+	std::vector<FP_TYPE> tmp;
+	FP_TYPE v;
 
-	for (int_j = 0; int_j < int_n; ++int_j)
+	for (j = 0; j < n; ++j)
 	{
-		int_begin = int_s;
-		int_end = 0;
-		b_found = false;
-		vfp_tmp = std::vector<FP_TYPE>(vfp_arr.begin() + uint_ind, vfp_arr.end());
-		int_k = vfp_tmp.size();
+		begin = s;
+		end = 0;
+		found = false;
+		tmp = std::vector<FP_TYPE>(arr.begin() + ind, arr.end());
+		k = tmp.size();
 
-		for (int_i = 0; int_i < int_k; ++int_i)
+		for (i = 0; i < k; ++i)
 		{
-			fp_v = vfp_tmp[int_i] - vfp_time[int_j];
+			v = tmp[i] - time[j];
 
-			if ((!b_found) && (fp_v >= 0))
+			if ((!found) && (v >= 0))
 			{
-				b_found = true;
-				int_begin = uint_ind + int_i;
+				found = true;
+				begin = ind + i;
 			}
 
-			if (b_found)
+			if (found)
 			{
-				if (fp_v > 0)
+				if (v > 0)
 				{
-					uint_ind += int_i;
-					int_end = uint_ind;
+					ind += i;
+					end = ind;
 					break;
 				}
-				else if (int_i == (int_k - 1))
+				else if (i == (k - 1))
 				{
-					int_end = int_s;
+					end = s;
 					break;
 				}
 			}
 		}
 
-		vint_left[int_j] = int_begin;
-		vint_right[int_j] = int_end;
+		left[j] = begin;
+		right[j] = end;
 	}
 
-	return std::make_pair(vint_left, vint_right);
+	return std::make_pair(left, right);
+}
+
+std::pair<std::vector<INT_TYPE>, std::vector<INT_TYPE>>
+quote_index(const std::vector<FP_TYPE> &q_t, const std::vector<FP_TYPE> &tr_t)
+{
+	auto ind = get_ind(q_t, tr_t);
+	std::vector<INT_TYPE> &left = ind.first;
+	std::vector<INT_TYPE> &right = ind.second;
+
+	for (int i = 0; i < left.size(); ++i)
+	{
+		if (left[i] < right[i])
+			right[i] -= 1;
+
+		left[i] -= 1;
+
+		if (left[i] < 0)
+			left[i] = 0;
+	}
+
+	return std::make_pair(left, right);
 }
