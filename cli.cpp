@@ -16,20 +16,20 @@ do { \
 int
 main()
 {
-	std::vector<FP_TYPE> q_t {2, 2, 2};
-	std::vector<FP_TYPE> tr_t {1, 3, 1};
+	fp_vector q_t {2, 2, 2};
+	fp_vector tr_t {1, 3, 1};
 	debug_vector(q_t);
 	debug_vector(tr_t);
 
 	auto inter = get_ind(q_t, tr_t);
-	std::vector<INT_TYPE> &inter_left = inter.first;
-	std::vector<INT_TYPE> &inter_right = inter.second;
+	int_vector &inter_left = inter.first;
+	int_vector &inter_right = inter.second;
 	debug_vector(inter_left);
 	debug_vector(inter_right);
 
 	auto ind = quote_index(q_t, tr_t);
-	std::vector<INT_TYPE> &left = ind.first;
-	std::vector<INT_TYPE> &right = ind.second;
+	int_vector &left = ind.first;
+	int_vector &right = ind.second;
 	debug_vector(left);
 	debug_vector(right);
 
