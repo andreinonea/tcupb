@@ -1,13 +1,17 @@
 #include "Utils.h"
 
+#include <iostream>
 #include <utility>
 #include <vector>
 
 std::pair<int_vector, int_vector>
 get_ind(const fp_vector &arr, const fp_vector &time)
 {
-	INT_TYPE n = arr.size();
-	INT_TYPE s = time.size();
+	INT_TYPE s = arr.size();
+	INT_TYPE n = time.size();
+
+	std::cout << "s=" << s << '\n';
+	std::cout << "n=" << n << '\n';
 
 	int_vector left(n, 0);
 	int_vector right(n, 0);
@@ -28,11 +32,20 @@ get_ind(const fp_vector &arr, const fp_vector &time)
 		tmp = fp_vector(arr.begin() + ind, arr.end());
 		k = tmp.size();
 
+		if (j > (n - 3))
+		{
+			std::cout << "it " << j << ": tmp: ";
+			for (int z = 0; z < k; ++z)
+				std::cout << tmp[z] << ' ';
+			std::cout << '\n';
+			std::cout << '\n';
+		}
+
 		for (i = 0; i < k; ++i)
 		{
 			v = tmp[i] - time[j];
 
-			if ((!found) && (v >= 0))
+			if ((!found) && (v >= 0.0))
 			{
 				found = true;
 				begin = ind + i;
@@ -40,7 +53,7 @@ get_ind(const fp_vector &arr, const fp_vector &time)
 
 			if (found)
 			{
-				if (v > 0)
+				if (v > 0.0)
 				{
 					ind += i;
 					end = ind;
@@ -64,9 +77,17 @@ get_ind(const fp_vector &arr, const fp_vector &time)
 std::pair<int_vector, int_vector>
 quote_index(const fp_vector &q_t, const fp_vector &tr_t)
 {
+	std::cout << "orig\n";
+	debug_vector(q_t);
+	debug_vector(tr_t);
+
 	auto ind = get_ind(q_t, tr_t);
 	int_vector &left = ind.first;
 	int_vector &right = ind.second;
+
+	std::cout << "get_ind\n";
+	debug_vector(ind.first);
+	debug_vector(ind.second);
 
 	for (int i = 0; i < left.size(); ++i)
 	{
@@ -78,6 +99,10 @@ quote_index(const fp_vector &q_t, const fp_vector &tr_t)
 		if (left[i] < 0)
 			left[i] = 0;
 	}
+
+	std::cout << "quote_index\n";
+	debug_vector(left);
+	debug_vector(right);
 
 	return std::make_pair(left, right);
 }
