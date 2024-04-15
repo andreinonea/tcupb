@@ -3,7 +3,6 @@
 
 #include <utility>
 #include <vector>
-#include <unordered_map>
 
 typedef bool BOOL_TYPE;
 typedef int INT_TYPE;

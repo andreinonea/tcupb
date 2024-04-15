@@ -1,18 +1,16 @@
 #pragma once
 #include <string>
-#include <vector>
 
-
+// Trades.h
 class Trades {
-private:
-	std::string symbol;
-	std::string timestamp;
-	std::string exchange;
-	double price;
-	double size;
-	double id;
+    std::string id;
+    std::string symbol;
+    std::string timestamp;
+    std::string exchange;
+    double price;
+    double size;
 
 public:
-	Trades(std::string symbol, std::string timestamp, std::string exchange, double price, double size, double id);
-
+    Trades(std::string id, std::string symbol, std::string timestamp, std::string exchange, double price, double size);
+    // rest of your code...
 };

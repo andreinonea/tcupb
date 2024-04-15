@@ -1,5 +1,4 @@
 #include "Quotes.h"
-#include <iostream>
 using std::string;
 using hmdf::DateTime;
 
