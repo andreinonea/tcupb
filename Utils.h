@@ -51,17 +51,89 @@ typedef std::vector<std::vector<FP_TYPE>> fp_matrix;
 template <typename T>
 std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b)
 {
-    assert(a.size() == b.size());
+	assert(a.size() == b.size());
+	std::vector<T> result;
+	result.reserve(a.size());
 
-    std::vector<T> result;
-    result.reserve(a.size());
-
-    std::transform(a.begin(), a.end(), b.begin(), std::back_inserter(result), std::plus<T>());
-    return result;
+	std::transform(a.begin(), a.end(), b.begin(), std::back_inserter(result), std::plus<T>());
+	return result;
 }
 
-fp_vector vec_diff(const fp_vector &v);
-int_vector vec_diff(const int_vector &v);
+template <typename T>
+std::vector<T>& operator*=(std::vector<T> &vec, const T &val)
+{
+	for (auto &el : vec)
+		el *= val;
+	return vec;
+}
+
+template <typename T>
+std::vector<T> vec_diff(const std::vector<T> &v)
+{
+	std::vector<T> d(v.size() - 1, (T)0);
+
+	for (int i = 0; i < d.size(); ++i)
+		d[i] = v[i+1] - v[i];
+
+	return d;
+}
+
+template <typename T>
+int_vector vec_less(const std::vector<T> &a, const std::vector<T> &b)
+{
+	assert(a.size() == b.size());
+	int_vector d(a.size(), 0);
+
+	for (int i = 0; i < d.size(); ++i)
+		if (a[i] < b[i])
+			d[i] = 1;
+
+	return d;
+}
+
+template <typename Iter>
+int_vector vec_less(const Iter a_begin, const Iter a_end, const Iter b_begin, const Iter b_end)
+{
+	auto a_range = std::distance(a_begin, a_end);
+	auto b_range = std::distance(b_begin, b_end);
+	assert(a_range == b_range);
+	int_vector d(a_range, 0);
+
+	for (auto a_it = a_begin, b_it = b_begin, d_it = d.begin(); a_it < a_end && b_it < b_end && d_it < d.end(); ++a_it, ++b_it, ++d_it)
+		if (*a_it < *b_it)
+			*d_it = 1;
+
+	return d;
+}
+
+template <typename T>
+int_vector vec_greater(const std::vector<T> &a, const std::vector<T> &b)
+{
+	assert(a.size() == b.size());
+	int_vector d(a.size(), 0);
+
+	for (int i = 0; i < d.size(); ++i)
+		if (a[i] > b[i])
+			d[i] = 1;
+
+	return d;
+}
+
+template <typename Iter>
+int_vector vec_greater(const Iter a_begin, const Iter a_end, const Iter b_begin, const Iter b_end)
+{
+	auto a_range = std::distance(a_begin, a_end);
+	auto b_range = std::distance(b_begin, b_end);
+	assert(a_range == b_range);
+	int_vector d(a_range, 0);
+
+	for (auto a_it = a_begin, b_it = b_begin, d_it = d.begin(); a_it < a_end && b_it < b_end && d_it < d.end(); ++a_it, ++b_it, ++d_it)
+		if (*a_it > *b_it)
+			*d_it = 1;
+
+	return d;
+}
+
 int_vector vec_nonzero(const fp_vector &v);
 
 std::pair<int_vector, int_vector> get_ind(const fp_vector &arr, const fp_vector &time);
@@ -76,6 +148,7 @@ struct KTC_Data
 	fp_vector volume;
 };
 
+// Deprecated.
 enum class KTC_Algorithm : UCHAR_TYPE
 {
 	FULL_INFORMATION_DS_1 = 1,

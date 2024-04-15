@@ -4,28 +4,6 @@
 #include <utility>
 #include <vector>
 
-fp_vector
-vec_diff(const fp_vector &v)
-{
-	fp_vector d(v.size() - 1, 0.0);
-
-	for (int i = 0; i < d.size(); ++i)
-		d[i] = v[i+1] - v[i];
-
-	return d;
-}
-
-int_vector
-vec_diff(const int_vector &v)
-{
-	int_vector d(v.size() - 1, 0);
-
-	for (int i = 0; i < d.size(); ++i)
-		d[i] = v[i+1] - v[i];
-
-	return d;
-}
-
 int_vector
 vec_nonzero(const fp_vector &v)
 {
