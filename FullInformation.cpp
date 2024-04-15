@@ -2,6 +2,7 @@
 #include "Utils.h"
 
 #include <algorithm>
+#include <iostream>
 
 void
 KTC_FullInformation::classify(
@@ -44,8 +45,20 @@ KTC_FullInformation::extract_variables(
 	auto fin = std::unique(t_time_unique.begin(), t_time_unique.end());
 	t_time_unique.resize(std::distance(t_time_unique.begin(), fin));
 
-	quote_index(ask.time, t_time_unique);
-	quote_index(bid.time, t_time_unique);
+	auto a = quote_index(ask.time, t_time_unique);
+	auto b = quote_index(bid.time, t_time_unique);
+
+	int_vector &a_l = a.first;
+	int_vector &a_r = a.second;
+
+	int_vector &b_l = b.first;
+	int_vector &b_r = b.second;
+
+	fp_vector askit = interpolate_time(ask.time);
+	fp_vector bidit = interpolate_time(bid.time);
+
+	debug_vector(askit);
+	debug_vector(bidit);
 }
 
 void

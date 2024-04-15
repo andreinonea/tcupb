@@ -31,6 +31,9 @@ do { \
 
 #define debug_vector(v) debug_vector_n(v, 3)
 
+#include <algorithm>
+#include <cassert>
+#include <functional>
 #include <utility>
 #include <vector>
 
@@ -44,8 +47,27 @@ typedef std::vector<INT_TYPE> int_vector;
 typedef std::vector<FP_TYPE> fp_vector;
 typedef std::vector<std::vector<FP_TYPE>> fp_matrix;
 
+// Vector utils
+template <typename T>
+std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b)
+{
+    assert(a.size() == b.size());
+
+    std::vector<T> result;
+    result.reserve(a.size());
+
+    std::transform(a.begin(), a.end(), b.begin(), std::back_inserter(result), std::plus<T>());
+    return result;
+}
+
+fp_vector vec_diff(const fp_vector &v);
+int_vector vec_diff(const int_vector &v);
+int_vector vec_nonzero(const fp_vector &v);
+
 std::pair<int_vector, int_vector> get_ind(const fp_vector &arr, const fp_vector &time);
 std::pair<int_vector, int_vector> quote_index(const fp_vector &q_t, const fp_vector &tr_t);
+fp_vector concat_runs(const int_vector &x, bool hj_version);
+fp_vector interpolate_time(const fp_vector &time, bool hj_version = false);
 
 struct KTC_Data
 {

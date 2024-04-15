@@ -28,6 +28,14 @@ main()
 	// debug_vector(left);
 	// debug_vector(right);
 
+	// fp_vector diff_test {0.0, 1.0, 3.0, 6.0};
+	// fp_vector diff_test_result = vec_diff(diff_test);
+	// int_vector nonzero_test_result = vec_nonzero(diff_test);
+	// debug_vector(diff_test);
+	// debug_vector(diff_test_result);
+	// debug_vector(nonzero_test_result);
+	// return 0;
+
 
 	KTC_Data trades{};
 	{
@@ -53,29 +61,15 @@ main()
 	KTC_Data ask{};
 	KTC_Data bid{};
 	{
-		io::CSVReader<5, io::trim_chars<' ', '\t'>, io::double_quote_escape<',','\"'>> qt_data("AAPL_quotes_2021-10-26.csv");
-		qt_data.read_header(io::ignore_extra_column, "timestamp", "ask_price", "ask_size", "bid_price", "bid_size");
+		io::CSVReader<5, io::trim_chars<' ', '\t'>, io::double_quote_escape<',','\"'>> q_data("AAPL_quotes_2021-10-26.csv");
+		q_data.read_header(io::ignore_extra_column, "timestamp", "ask_price", "ask_size", "bid_price", "bid_size");
 		const char *timestamp;
 		FP_TYPE ask_price, ask_size;
 		FP_TYPE bid_price, bid_size;
 
-		while (qt_data.read_row(timestamp, ask_price, ask_size, bid_price, bid_size))
+		while (q_data.read_row(timestamp, ask_price, ask_size, bid_price, bid_size))
 		{
 			hmdf::DateTime datetime(timestamp, hmdf::DT_DATE_STYLE::ISO_STYLE, hmdf::DT_TIME_ZONE::GMT);
-			// double h = datetime.hour() * 3600.0;
-			// double m = datetime.minute() * 60.0;
-			// double s = datetime.sec();
-			// double us = datetime.microsec() * 0.000001;
-			// double t = h + m + s + us;
-			// double faraus = h + m + s;
-			// std::cout << "h = " << h << '\n';
-			// std::cout << "m = " << m << '\n';
-			// std::cout << "s = " << s << '\n';
-			// std::cout << "us = " << us << '\n';
-			// std::cout << "faraus = " << faraus << '\n';
-			// std::cout << "t = " << t << '\n';
-			// std::cout << "h + m + s + us = " << h + m + s + us << '\n';
-			// std::cout << "-----\n";
 			double t = datetime.hour() * 3600.0 + datetime.minute() * 60.0 + datetime.sec() + datetime.microsec() * 0.000001;
 			ask.time.push_back(t);
 			ask.price.push_back(ask_price);
