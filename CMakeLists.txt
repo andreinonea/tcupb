@@ -21,7 +21,8 @@ FetchContent_Declare (
 # This will try calling find_package() first for the dependencies
 FetchContent_MakeAvailable(DataFrame)
 
-add_library ("${PROJECT_NAME}")
+add_library ("${PROJECT_NAME}"
+		Trades.cpp)
 target_sources ("${PROJECT_NAME}" PRIVATE
 	tc.cpp
 	Utils.cpp
