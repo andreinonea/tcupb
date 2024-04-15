@@ -1,3 +1,6 @@
 /[bB]uild
 /_*
 /.vscode
+/.vs
+/.
+out/
