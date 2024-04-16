@@ -5,27 +5,27 @@
 #include <iostream>
 
 void
-KTC_FullInformation::classify(
-	const KTC_FullInformationVersion version,
+KTC_FiAlgo::classify(
+	const KTC_FiAlgoVersion version,
 	const KTC_Data &trades,
 	const KTC_Data &ask,
 	const KTC_Data &bid,
 	FP_TYPE bar)
 {
 	// TODO: only needed if KTC_Algorithm is FI_ALGO, which IT IS...
-	auto vars = KTC_FullInformation::extract_variables(version, trades, ask, bid);
+	auto vars = KTC_FiAlgo::extract_variables(version, trades, ask, bid);
 
 	switch (version)
 	{
-	case KTC_FullInformationVersion::DS_1:
-		KTC_FullInformation::sign_trades_ds1(vars, bar);
+	case KTC_FiAlgoVersion::DS_1:
+		KTC_FiAlgo::sign_trades_ds1(vars, bar);
 		break;
-	case KTC_FullInformationVersion::DS_2:
-		KTC_FullInformation::sign_trades_ds2(vars, bar);
+	case KTC_FiAlgoVersion::DS_2:
+		KTC_FiAlgo::sign_trades_ds2(vars, bar);
 		break;
 	default:
-	case KTC_FullInformationVersion::DS_3:
-		KTC_FullInformation::sign_trades_ds3(vars, bar);
+	case KTC_FiAlgoVersion::DS_3:
+		KTC_FiAlgo::sign_trades_ds3(vars, bar);
 		break;
 	}
 
@@ -33,7 +33,7 @@ KTC_FullInformation::classify(
 }
 
 int_vector
-KTC_FullInformation::delta_vol(const int_vector &price, const int_vector &volume, bool is_ask)
+KTC_FiAlgo::delta_vol(const int_vector &price, const int_vector &volume, bool is_ask)
 {
 	int_vector vdiff = vec_diff(volume);
 	vdiff.push_back(0);
@@ -74,9 +74,9 @@ KTC_FullInformation::delta_vol(const int_vector &price, const int_vector &volume
 	return vdiff;
 }
 
-KTC_FullInformationVariables
-KTC_FullInformation::extract_variables(
-	const KTC_FullInformationVersion version,
+KTC_FiAlgoVariables
+KTC_FiAlgo::extract_variables(
+	const KTC_FiAlgoVersion version,
 	const KTC_Data &trades,
 	const KTC_Data &ask,
 	const KTC_Data &bid)
@@ -110,10 +110,10 @@ KTC_FullInformation::extract_variables(
 
 	int_vector askv(ask.volume.begin(), ask.volume.end());
 	int_vector bidv(bid.volume.begin(), bid.volume.end());
-	if (version != KTC_FullInformationVersion::DS_3)
+	if (version != KTC_FiAlgoVersion::DS_3)
 	{
-		askv = KTC_FullInformation::delta_vol(askp, askv);
-		bidv = KTC_FullInformation::delta_vol(bidp, bidv, false);
+		askv = KTC_FiAlgo::delta_vol(askp, askv);
+		bidv = KTC_FiAlgo::delta_vol(bidp, bidv, false);
 	}
 	debug_vector(askv);
 	debug_vector(bidv);
@@ -151,7 +151,7 @@ KTC_FullInformation::extract_variables(
 	int_vector p(trades.price.begin(), trades.price.end());
 	int_vector v(trades.volume.begin(), trades.volume.end());
 
-	return KTC_FullInformationVariables {
+	return KTC_FiAlgoVariables {
 		.P = p,
 		.V = v,
 		.Al = a_l,
@@ -169,16 +169,16 @@ KTC_FullInformation::extract_variables(
 }
 
 void
-KTC_FullInformation::sign_trades_ds1(const KTC_FullInformationVariables &vars, FP_TYPE bar)
+KTC_FiAlgo::sign_trades_ds1(const KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
 }
 
 void
-KTC_FullInformation::sign_trades_ds2(const KTC_FullInformationVariables &vars, FP_TYPE bar)
+KTC_FiAlgo::sign_trades_ds2(const KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
 }
 
 void
-KTC_FullInformation::sign_trades_ds3(const KTC_FullInformationVariables &vars, FP_TYPE bar)
+KTC_FiAlgo::sign_trades_ds3(const KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
 }

@@ -82,7 +82,7 @@ main()
 	}
 
 	std::cout << "len(df_tr.time)=" << trades.time.size() << '\n';
-	KTC_FullInformation::classify(KTC_FullInformationVersion::DS_1, trades, ask, bid);
+	KTC_FiAlgo::classify(KTC_FiAlgoVersion::DS_1, trades, ask, bid);
 
 	return 0;
 }

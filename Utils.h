@@ -45,7 +45,6 @@ typedef long double FP_TYPE;
 
 typedef std::vector<INT_TYPE> int_vector;
 typedef std::vector<FP_TYPE> fp_vector;
-typedef std::vector<std::vector<FP_TYPE>> fp_matrix;
 
 // Vector utils
 template <typename T>
@@ -148,16 +147,5 @@ struct KTC_Data
 	fp_vector volume;
 };
 
-// Deprecated.
-enum class KTC_Algorithm : UCHAR_TYPE
-{
-	FULL_INFORMATION_DS_1 = 1,
-	FULL_INFORMATION_DS_2,
-	FULL_INFORMATION_DS_3,
-	LEE_READY,
-	BULK_VOLUME,
-	EMO,
-	CLNV,
-};
 
 #endif // UPB_TC_UTILS_H_
