@@ -23,6 +23,7 @@ FetchContent_MakeAvailable(DataFrame)
 
 add_library("${PROJECT_NAME}")
 target_sources("${PROJECT_NAME}" PRIVATE
+	FullInformation.cpp
 	tc.cpp
 	Utils.cpp
 )
@@ -33,10 +34,6 @@ target_sources("${PROJECT_NAME}" PRIVATE
 # 	PUBLIC_HEADER "${TCUPB_HEADERS}"
 # )
 
-target_link_libraries("${PROJECT_NAME}" PRIVATE
-	DataFrame
-)
-
 add_executable("${PROJECT_NAME}-cli")
 target_sources("${PROJECT_NAME}-cli" PRIVATE
 	cli.cpp
@@ -44,6 +41,7 @@ target_sources("${PROJECT_NAME}-cli" PRIVATE
 
 target_link_libraries("${PROJECT_NAME}-cli" PRIVATE
 	"${PROJECT_NAME}"
+	DataFrame
 )
 # target_include_directories("${PROJECT_NAME}-cli" PRIVATE
 # 	"${PROJECT_NAME_INCLUDE_DIR}"
