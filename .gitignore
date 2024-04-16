@@ -1,3 +1,4 @@
-/[bB]uild
-/_*
-/.vscode
+[bB]uild
+_*
+.vscode
+out
