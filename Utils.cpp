@@ -1,6 +1,7 @@
 #include "Utils.h"
 
 #include <iostream>
+#include <queue>
 #include <utility>
 #include <vector>
 
@@ -149,4 +150,53 @@ interpolate_time(const fp_vector &time, bool hj_version)
 	debug_vector(intertime);
 
 	return time + intertime;
+}
+
+void
+apply_tick(KTC_Result &res, const fp_vector &trade_prices)
+{
+	int_vector indexes{}, prices{};
+
+	for (int i = 0; i < res.step.size(); ++i)
+		if (res.step[i] == 0)
+		{
+			indexes.emplace_back(i);
+			prices.push_back((INT_TYPE) trade_prices[i]);
+		}
+
+	std::queue<INT_TYPE> s{};
+
+	for (int j = 0; j < prices.size(); ++j)
+	{
+		INT_TYPE count = 0;
+		INT_TYPE p = prices[j];
+		INT_TYPE t = indexes[j];
+
+		int_vector lstp(trade_prices.begin(), std::next(trade_prices.begin(), t));
+		INT_TYPE sz = lstp.size();
+
+		s.push(0);
+
+		while (sz > count++)
+		{
+			INT_TYPE lp = lstp[sz - count];
+			if (p > lp)
+			{
+				s.back() = 1;
+				break;
+			}
+			if (p < lp)
+			{
+				s.back() = -1;
+				break;
+			}
+		}
+	}
+
+	for (int i = 0; i < res.step.size(); ++i)
+		if (res.step[i] == 0)
+		{
+			res.initiator[i] = s.front();
+			s.pop();
+		}
 }
