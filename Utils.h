@@ -157,5 +157,7 @@ struct KTC_Result
 KTC_Pair quote_index(const fp_vector &quote_times, const fp_vector &trade_times);
 fp_vector concat_runs(const int_vector &x, bool hj_version);
 fp_vector interpolate_time(const fp_vector &time, bool hj_version = false);
+void apply_tick(KTC_Result &res, const fp_vector &trade_prices);
+
 
 #endif // UPB_TC_UTILS_H_
