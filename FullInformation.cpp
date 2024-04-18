@@ -12,7 +12,6 @@ KTC_FiAlgo::classify(
 	const KTC_Data &bid,
 	FP_TYPE bar)
 {
-	// TODO: only needed if KTC_Algorithm is FI_ALGO, which IT IS...
 	auto vars = KTC_FiAlgo::extract_variables(version, trades, ask, bid);
 
 	switch (version)
@@ -89,14 +88,8 @@ KTC_FiAlgo::extract_variables(
 	auto fin = std::unique(t_time_unique.begin(), t_time_unique.end());
 	t_time_unique.resize(std::distance(t_time_unique.begin(), fin));
 
-	auto a = quote_index(ask.time, t_time_unique);
-	auto b = quote_index(bid.time, t_time_unique);
-
-	int_vector &a_l = a.first;
-	int_vector &a_r = a.second;
-
-	int_vector &b_l = b.first;
-	int_vector &b_r = b.second;
+	KTC_Pair a = quote_index(ask.time, t_time_unique);
+	KTC_Pair b = quote_index(bid.time, t_time_unique);
 
 	fp_vector askit = interpolate_time(ask.time);
 	fp_vector bidit = interpolate_time(bid.time);
@@ -154,10 +147,10 @@ KTC_FiAlgo::extract_variables(
 	return KTC_FiAlgoVariables {
 		.P = p,
 		.V = v,
-		.Al = a_l,
-		.Ar = a_r,
-		.Bl = b_l,
-		.Br = b_r,
+		.Al = a.left,
+		.Ar = a.right,
+		.Bl = b.left,
+		.Br = b.right,
 		.runlength = tr_n,
 		.askp = askp,
 		.bidp = bidp,
@@ -168,17 +161,20 @@ KTC_FiAlgo::extract_variables(
 	};
 }
 
-void
+KTC_Result
 KTC_FiAlgo::sign_trades_ds1(const KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
+	return KTC_Result {};
 }
 
-void
+KTC_Result
 KTC_FiAlgo::sign_trades_ds2(const KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
+	return KTC_Result {};
 }
 
-void
+KTC_Result
 KTC_FiAlgo::sign_trades_ds3(const KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
+	return KTC_Result {};
 }

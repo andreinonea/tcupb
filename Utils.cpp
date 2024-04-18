@@ -16,11 +16,15 @@ vec_nonzero(const fp_vector &v)
 	return ind;
 }
 
-std::pair<int_vector, int_vector>
-get_ind(const fp_vector &arr, const fp_vector &time)
+KTC_Pair
+quote_index(const fp_vector &quote_times, const fp_vector &trade_times)
 {
-	INT_TYPE s = arr.size();
-	INT_TYPE n = time.size();
+	std::cout << "orig\n";
+	debug_vector(quote_times);
+	debug_vector(trade_times);
+
+	INT_TYPE s = quote_times.size();
+	INT_TYPE n = trade_times.size();
 
 	std::cout << "s=" << s << '\n';
 	std::cout << "n=" << n << '\n';
@@ -41,21 +45,12 @@ get_ind(const fp_vector &arr, const fp_vector &time)
 		begin = s;
 		end = 0;
 		found = false;
-		tmp = fp_vector(arr.begin() + ind, arr.end());
+		tmp = fp_vector(quote_times.begin() + ind, quote_times.end());
 		k = tmp.size();
-
-		if (j > (n - 3))
-		{
-			std::cout << "it " << j << ": tmp: ";
-			for (int z = 0; z < k; ++z)
-				std::cout << tmp[z] << ' ';
-			std::cout << '\n';
-			std::cout << '\n';
-		}
 
 		for (i = 0; i < k; ++i)
 		{
-			v = tmp[i] - time[j];
+			v = tmp[i] - trade_times[j];
 
 			if ((!found) && (v >= 0.0))
 			{
@@ -83,23 +78,9 @@ get_ind(const fp_vector &arr, const fp_vector &time)
 		right[j] = end;
 	}
 
-	return std::make_pair(left, right);
-}
-
-std::pair<int_vector, int_vector>
-quote_index(const fp_vector &q_t, const fp_vector &tr_t)
-{
-	std::cout << "orig\n";
-	debug_vector(q_t);
-	debug_vector(tr_t);
-
-	auto ind = get_ind(q_t, tr_t);
-	int_vector &left = ind.first;
-	int_vector &right = ind.second;
-
 	std::cout << "get_ind\n";
-	debug_vector(ind.first);
-	debug_vector(ind.second);
+	debug_vector(left);
+	debug_vector(right);
 
 	for (int i = 0; i < left.size(); ++i)
 	{
@@ -116,7 +97,7 @@ quote_index(const fp_vector &q_t, const fp_vector &tr_t)
 	debug_vector(left);
 	debug_vector(right);
 
-	return std::make_pair(left, right);
+	return KTC_Pair { left, right };
 }
 
 fp_vector
