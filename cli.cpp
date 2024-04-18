@@ -82,7 +82,23 @@ main()
 	}
 
 	std::cout << "len(df_tr.time)=" << trades.time.size() << '\n';
-	KTC_FiAlgo::classify(KTC_FiAlgoVersion::DS_1, trades, ask, bid);
+	KTC_Result res = KTC_FiAlgo::classify(KTC_FiAlgoVersion::DS_3, trades, ask, bid);
+
+	std::cout << "\n\n==== FINAL ====\n";
+
+	debug_vector_n(res.initiator, 5);
+	debug_vector_n(res.step, 5);
+	std::cout << "isize=" << res.initiator.size() << '\n';
+	std::cout << "ssize=" << res.step.size() << '\n';
+
+	int isum = 0;
+	for (auto& el : res.initiator)
+		isum += el;
+	std::cout << "isum=" << isum << '\n';
+	int ssum = 0;
+	for (auto& el : res.step)
+		ssum += el;
+	std::cout << "ssum=" << ssum << '\n';
 
 	return 0;
 }
