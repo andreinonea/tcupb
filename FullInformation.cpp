@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <iostream>
 
-void
+KTC_Result
 KTC_FiAlgo::classify(
 	const KTC_FiAlgoVersion version,
 	const KTC_Data &trades,
@@ -12,23 +12,44 @@ KTC_FiAlgo::classify(
 	const KTC_Data &bid,
 	FP_TYPE bar)
 {
+	KTC_Result res;
 	auto vars = KTC_FiAlgo::extract_variables(version, trades, ask, bid);
 
 	switch (version)
 	{
 	case KTC_FiAlgoVersion::DS_1:
-		KTC_FiAlgo::sign_trades_ds1(vars, bar);
+		res = KTC_FiAlgo::sign_trades_ds1(vars, bar);
 		break;
 	case KTC_FiAlgoVersion::DS_2:
-		KTC_FiAlgo::sign_trades_ds2(vars, bar);
+		res = KTC_FiAlgo::sign_trades_ds2(vars, bar);
 		break;
 	default:
 	case KTC_FiAlgoVersion::DS_3:
-		KTC_FiAlgo::sign_trades_ds3(vars, bar);
+		res = KTC_FiAlgo::sign_trades_ds3(vars, bar);
 		break;
 	}
 
-	// TODO: Plus some other things.
+	debug_vector_n(res.initiator, 5);
+	debug_vector_n(res.step, 5);
+	std::cout << "isize=" << res.initiator.size() << '\n';
+	std::cout << "ssize=" << res.step.size() << '\n';
+
+	int isum = 0;
+	for (auto& el : res.initiator)
+		isum += el;
+	std::cout << "isum=" << isum << '\n';
+	int ssum = 0;
+	for (auto& el : res.step)
+		ssum += el;
+	std::cout << "ssum=" << ssum << '\n';
+
+	apply_tick(res, trades.price);
+
+	for (int i = 0; i < res.step.size(); ++i)
+		if (res.step[i] == 0)
+			res.step[i] = 4;
+
+	return res;
 }
 
 int_vector
@@ -154,8 +175,8 @@ KTC_FiAlgo::extract_variables(
 		.runlength = tr_n,
 		.askp = askp,
 		.bidp = bidp,
-		.avdiff = askv,
-		.bvdiff = bidv,
+		.askv = askv,
+		.bidv = bidv,
 		.atime = askit,
 		.btime = bidit,
 	};
@@ -164,17 +185,409 @@ KTC_FiAlgo::extract_variables(
 KTC_Result
 KTC_FiAlgo::sign_trades_ds1(const KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
-	return KTC_Result {};
+	INT_TYPE n = vars.Al.size();
+	INT_TYPE anum = vars.askp.size();
+	INT_TYPE bnum = vars.bidp.size();
+	INT_TYPE trnum = vars.P.size();
+
+	int_vector s(trnum, 0);
+	int_vector c(trnum, 0);
+
+	INT_TYPE i, j;
+	INT_TYPE al, ar, bl, br, last_ask, last_bid, k, d_a, d_b, tmpind, p, v;
+
+	int_vector discard_a(anum, 0);
+	int_vector discard_b(bnum, 0);
+
+	INT_TYPE ind = 0;
+	BOOL_TYPE av_match, bv_match;
+	FP_TYPE upper, lower;
+
+	for (j = 0; j < n; ++j)
+	{
+		al = vars.Al[j];
+		ar = vars.Ar[j];
+		bl = vars.Bl[j];
+		br = vars.Br[j];
+
+		last_ask = vars.askp[al];
+		last_bid = vars.bidp[bl];
+
+		for (i = 0; i < vars.runlength[j]; ++i)
+		{
+			tmpind = ind + i;
+			p = vars.P[tmpind];
+			v = vars.V[tmpind];
+			av_match = false;
+			bv_match = false;
+
+			for (k = 0; k < (ar - al); ++k)
+				if ((discard_a[al + k] == 0)
+					&& (vars.askp[al + k] == p)
+					&& (vars.askv[al + k] == v))
+				{
+					av_match = true;
+					d_a = k;
+					break;
+				}
+
+			for (k = 0; k < (br - bl); ++k)
+				if ((discard_b[bl + k] == 0)
+					&& (vars.bidp[bl + k] == p)
+					&& (vars.bidv[bl + k] == v))
+				{
+					bv_match = true;
+					d_b = k;
+					break;
+				}
+
+			if (av_match && bv_match)
+			{
+				if (vars.atime[al + d_a] < vars.btime[bl + d_b])
+				{
+					s[tmpind] = 1;
+					c[tmpind] = 2;
+					discard_a[al + d_a] = 1;
+					last_ask = vars.askp[al + d_a];
+				}
+				else if (vars.atime[al + d_a] > vars.btime[bl + d_b])
+				{
+					s[tmpind] = -1;
+					c[tmpind] = 2;
+					discard_b[bl + d_b] = 1;
+					last_bid = vars.bidp[bl + d_b];
+				}
+			}
+			else if (av_match)
+			{
+				s[tmpind] = 1;
+				c[tmpind] = 1;
+				last_ask = vars.askp[al + d_a];
+			}
+			else if (bv_match)
+			{
+				s[tmpind] = -1;
+				c[tmpind] = 1;
+				last_bid = vars.bidp[bl + d_b];
+			}
+			else if (last_ask > last_bid)
+			{
+				upper = last_ask * (1 - bar) + last_bid * bar;
+				lower = last_ask * bar + last_bid * (1 - bar);
+
+				if (p > upper)
+				{
+					s[tmpind] = 1;
+					c[tmpind] = 3;
+				}
+				else if (p < lower)
+				{
+					s[tmpind] = -1;
+					c[tmpind] = 3;
+				}
+			}
+		}
+		ind += vars.runlength[j];
+	}
+	return KTC_Result { .step = c, .initiator = s };
 }
 
 KTC_Result
-KTC_FiAlgo::sign_trades_ds2(const KTC_FiAlgoVariables &vars, FP_TYPE bar)
+KTC_FiAlgo::sign_trades_ds2(KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
-	return KTC_Result {};
+	INT_TYPE n = vars.Al.size();
+	INT_TYPE anum = vars.askp.size();
+	INT_TYPE bnum = vars.bidp.size();
+	INT_TYPE trnum = vars.P.size();
+
+	int_vector s(trnum, 0);
+	int_vector c(trnum, 0);
+
+	INT_TYPE i, j;
+	INT_TYPE al, ar, bl, br, last_ask, last_bid, k, d_a, d_b, tmpind, p, v;
+
+	INT_TYPE ind = 0;
+	BOOL_TYPE av_match, bv_match;
+	FP_TYPE upper, lower;
+
+	for (j = 0; j < n; ++j)
+	{
+		al = vars.Al[j];
+		ar = vars.Ar[j];
+		bl = vars.Bl[j];
+		br = vars.Br[j];
+
+		last_ask = vars.askp[al];
+		last_bid = vars.bidp[bl];
+
+		for (i = 0; i < vars.runlength[j]; ++i)
+		{
+			tmpind = ind + i;
+			p = vars.P[tmpind];
+			v = vars.V[tmpind];
+			av_match = false;
+			bv_match = false;
+
+			for (k = 0; k < (ar - al); ++k)
+				if ((vars.askp[al + k] == p)
+					&& (vars.askv[al + k] >= v))
+				{
+					av_match = true;
+					d_a = k;
+					break;
+				}
+
+			for (k = 0; k < (br - bl); ++k)
+				if ((vars.bidp[bl + k] == p)
+					&& (vars.bidv[bl + k] >= v))
+				{
+					bv_match = true;
+					d_b = k;
+					break;
+				}
+
+			if (av_match && bv_match)
+			{
+				if (vars.atime[al + d_a] < vars.btime[bl + d_b])
+				{
+					s[tmpind] = 1;
+					c[tmpind] = 2;
+					vars.askv[al + d_a] -= v;
+				}
+				else if (vars.atime[al + d_a] > vars.btime[bl + d_b])
+				{
+					s[tmpind] = -1;
+					c[tmpind] = 2;
+					vars.bidv[bl + d_b] -= v;
+				}
+			}
+			else if (av_match)
+			{
+				s[tmpind] = 1;
+				c[tmpind] = 1;
+			}
+			else if (bv_match)
+			{
+				s[tmpind] = -1;
+				c[tmpind] = 1;
+			}
+			else
+			{
+				for (k = 0; k < (ar - al); ++k)
+					if ((al + k + 1) == anum)
+						break;
+					else if ((vars.askp[al + k] < p)
+						&& (vars.askp[al + k + 1] == p))
+					{
+						av_match = true;
+						d_a = k + 1;
+						break;
+					}
+
+				for (k = 0; k < (br - bl); ++k)
+					if ((bl + k + 1) == bnum)
+						break;
+					else if ((vars.bidp[bl + k] > p)
+						&& (vars.bidp[bl + k + 1] == p))
+					{
+						bv_match = true;
+						d_b = k + 1;
+						break;
+					}
+
+				if (av_match && bv_match)
+				{
+					if (vars.atime[al + d_a] < vars.btime[bl + d_b])
+					{
+						s[tmpind] = 1;
+						c[tmpind] = 6;
+					}
+					else if (vars.atime[al + d_a] > vars.btime[bl + d_b])
+					{
+						s[tmpind] = -1;
+						c[tmpind] = 6;
+					}
+				}
+				else if (av_match)
+				{
+					s[tmpind] = 1;
+					c[tmpind] = 5;
+				}
+				else if (bv_match)
+				{
+					s[tmpind] = -1;
+					c[tmpind] = 5;
+				}
+				else
+				{
+					for (k = 0; k < (ar - al); ++k)
+						if ((al + k + 1) == anum)
+							break;
+						else if ((vars.askp[al + k] < p)
+							&& (vars.askp[al + k + 1] > p))
+						{
+							av_match = true;
+							d_a = k + 1;
+							break;
+						}
+
+					for (k = 0; k < (br - bl); ++k)
+						if ((bl + k + 1) == bnum)
+							break;
+						else if ((vars.bidp[bl + k] > p)
+							&& (vars.bidp[bl + k + 1] < p))
+						{
+							bv_match = true;
+							d_b = k + 1;
+							break;
+						}
+
+					if (av_match && bv_match)
+					{
+						if (vars.atime[al + d_a] < vars.btime[bl + d_b])
+						{
+							s[tmpind] = 1;
+							c[tmpind] = 8;
+						}
+						else if (vars.atime[al + d_a] > vars.btime[bl + d_b])
+						{
+							s[tmpind] = -1;
+							c[tmpind] = 8;
+						}
+					}
+					else if (av_match)
+					{
+						s[tmpind] = 1;
+						c[tmpind] = 7;
+					}
+					else if (bv_match)
+					{
+						s[tmpind] = -1;
+						c[tmpind] = 7;
+					}
+					else if (last_ask > last_bid)
+					{
+						upper = last_ask * (1 - bar) + last_bid * bar;
+						lower = last_ask * bar + last_bid * (1 - bar);
+
+						if (p > upper)
+						{
+							s[tmpind] = 1;
+							c[tmpind] = 3;
+						}
+						else if (p < lower)
+						{
+							s[tmpind] = -1;
+							c[tmpind] = 3;
+						}
+					}
+				}
+			}
+		}
+		ind += vars.runlength[j];
+	}
+
+	return KTC_Result { .step = c, .initiator = s };
 }
 
 KTC_Result
-KTC_FiAlgo::sign_trades_ds3(const KTC_FiAlgoVariables &vars, FP_TYPE bar)
+KTC_FiAlgo::sign_trades_ds3(KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
-	return KTC_Result {};
+	INT_TYPE n = vars.Al.size();
+	INT_TYPE anum = vars.askp.size();
+	INT_TYPE bnum = vars.bidp.size();
+	INT_TYPE trnum = vars.P.size();
+
+	int_vector s(trnum, 0);
+	int_vector c(trnum, 0);
+
+	INT_TYPE i, j;
+	INT_TYPE al, ar, bl, br, last_ask, last_bid, k, d_a, d_b, tmpind, p, v;
+
+	INT_TYPE ind = 0;
+	BOOL_TYPE av_match, bv_match;
+	FP_TYPE upper, lower;
+
+	for (j = 0; j < n; ++j)
+	{
+		al = vars.Al[j];
+		ar = vars.Ar[j];
+		bl = vars.Bl[j];
+		br = vars.Br[j];
+
+		last_ask = vars.askp[al];
+		last_bid = vars.bidp[bl];
+
+		for (i = 0; i < vars.runlength[j]; ++i)
+		{
+			tmpind = ind + i;
+			p = vars.P[tmpind];
+			v = vars.V[tmpind];
+			av_match = false;
+			bv_match = false;
+
+			for (k = 0; k < (ar - al); ++k)
+				if ((vars.askp[al + k] == p)
+					&& (vars.askv[al + k] >= v))
+				{
+					av_match = true;
+					d_a = k;
+					break;
+				}
+
+			for (k = 0; k < (br - bl); ++k)
+				if ((vars.bidp[bl + k] == p)
+					&& (vars.bidv[bl + k] >= v))
+				{
+					bv_match = true;
+					d_b = k;
+					break;
+				}
+
+			if (av_match && bv_match)
+			{
+				if (vars.atime[al + d_a] < vars.btime[bl + d_b])
+				{
+					s[tmpind] = 1;
+					c[tmpind] = 2;
+					vars.askv[al + d_a] -= v;
+				}
+				else if (vars.atime[al + d_a] > vars.btime[bl + d_b])
+				{
+					s[tmpind] = -1;
+					c[tmpind] = 2;
+					vars.bidv[bl + d_b] -= v;
+				}
+			}
+			else if (av_match)
+			{
+				s[tmpind] = 1;
+				c[tmpind] = 1;
+			}
+			else if (bv_match)
+			{
+				s[tmpind] = -1;
+				c[tmpind] = 1;
+			}
+			else if (last_ask > last_bid)
+			{
+				upper = last_ask * (1 - bar) + last_bid * bar;
+				lower = last_ask * bar + last_bid * (1 - bar);
+
+				if (p > upper)
+				{
+					s[tmpind] = 1;
+					c[tmpind] = 3;
+				}
+				else if (p < lower)
+				{
+					s[tmpind] = -1;
+					c[tmpind] = 3;
+				}
+			}
+		}
+		ind += vars.runlength[j];
+	}
+
+	return KTC_Result { .step = c, .initiator = s };
 }
