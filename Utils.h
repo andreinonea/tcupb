@@ -135,11 +135,6 @@ int_vector vec_greater(const Iter a_begin, const Iter a_end, const Iter b_begin,
 
 int_vector vec_nonzero(const fp_vector &v);
 
-std::pair<int_vector, int_vector> get_ind(const fp_vector &arr, const fp_vector &time);
-std::pair<int_vector, int_vector> quote_index(const fp_vector &q_t, const fp_vector &tr_t);
-fp_vector concat_runs(const int_vector &x, bool hj_version);
-fp_vector interpolate_time(const fp_vector &time, bool hj_version = false);
-
 struct KTC_Data
 {
 	fp_vector time;
@@ -147,5 +142,20 @@ struct KTC_Data
 	fp_vector volume;
 };
 
+struct KTC_Pair
+{
+	int_vector left;
+	int_vector right;
+};
+
+struct KTC_Result
+{
+	int_vector step;
+	int_vector initiator;
+};
+
+KTC_Pair quote_index(const fp_vector &quote_times, const fp_vector &trade_times);
+fp_vector concat_runs(const int_vector &x, bool hj_version);
+fp_vector interpolate_time(const fp_vector &time, bool hj_version = false);
 
 #endif // UPB_TC_UTILS_H_
