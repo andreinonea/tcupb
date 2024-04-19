@@ -2,7 +2,6 @@
 #include <vector>
 
 #include "Utils.h"
-// #include <tcupb/Utils.h>
 #include <DataFrame/Utils/DateTime.h>
 #include "FullInformation.h"
 
@@ -11,32 +10,6 @@
 int
 main()
 {
-	// fp_vector q_t {2, 2, 2};
-	// fp_vector tr_t {1, 3, 1};
-	// debug_vector(q_t);
-	// debug_vector(tr_t);
-
-	// auto inter = get_ind(q_t, tr_t);
-	// int_vector &inter_left = inter.first;
-	// int_vector &inter_right = inter.second;
-	// debug_vector(inter_left);
-	// debug_vector(inter_right);
-
-	// auto ind = quote_index(q_t, tr_t);
-	// int_vector &left = ind.first;
-	// int_vector &right = ind.second;
-	// debug_vector(left);
-	// debug_vector(right);
-
-	// fp_vector diff_test {0.0, 1.0, 3.0, 6.0};
-	// fp_vector diff_test_result = vec_diff(diff_test);
-	// int_vector nonzero_test_result = vec_nonzero(diff_test);
-	// debug_vector(diff_test);
-	// debug_vector(diff_test_result);
-	// debug_vector(nonzero_test_result);
-	// return 0;
-
-
 	KTC_Data trades{};
 	{
 		io::CSVReader<3, io::trim_chars<' ', '\t'>, io::double_quote_escape<',','\"'>> t_data("AAPL_trades_2021-10-26.csv");
@@ -81,8 +54,7 @@ main()
 		}
 	}
 
-	std::cout << "len(df_tr.time)=" << trades.time.size() << '\n';
-	KTC_Result res = KTC_FiAlgo::classify(KTC_FiAlgoVersion::DS_3, trades, ask, bid);
+	KTC_Result res = KTC_FiAlgo::classify(KTC_FiAlgoVersion::DS_3, trades, ask, bid, 0.6);
 
 	std::cout << "\n\n==== FINAL ====\n";
 

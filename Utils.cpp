@@ -20,15 +20,8 @@ vec_nonzero(const fp_vector &v)
 KTC_Pair
 quote_index(const fp_vector &quote_times, const fp_vector &trade_times)
 {
-	std::cout << "orig\n";
-	debug_vector(quote_times);
-	debug_vector(trade_times);
-
 	INT_TYPE s = quote_times.size();
 	INT_TYPE n = trade_times.size();
-
-	std::cout << "s=" << s << '\n';
-	std::cout << "n=" << n << '\n';
 
 	int_vector left(n, 0);
 	int_vector right(n, 0);
@@ -79,10 +72,6 @@ quote_index(const fp_vector &quote_times, const fp_vector &trade_times)
 		right[j] = end;
 	}
 
-	std::cout << "get_ind\n";
-	debug_vector(left);
-	debug_vector(right);
-
 	for (int i = 0; i < left.size(); ++i)
 	{
 		if (left[i] < right[i])
@@ -93,10 +82,6 @@ quote_index(const fp_vector &quote_times, const fp_vector &trade_times)
 		if (left[i] < 0)
 			left[i] = 0;
 	}
-
-	std::cout << "quote_index\n";
-	debug_vector(left);
-	debug_vector(right);
 
 	return KTC_Pair { left, right };
 }
@@ -147,7 +132,6 @@ interpolate_time(const fp_vector &time, bool hj_version)
 	int_vector runlength = vec_diff(ind);
 
 	fp_vector intertime = concat_runs(runlength, hj_version);
-	debug_vector(intertime);
 
 	return time + intertime;
 }

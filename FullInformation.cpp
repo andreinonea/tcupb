@@ -29,20 +29,6 @@ KTC_FiAlgo::classify(
 		break;
 	}
 
-	debug_vector_n(res.initiator, 5);
-	debug_vector_n(res.step, 5);
-	std::cout << "isize=" << res.initiator.size() << '\n';
-	std::cout << "ssize=" << res.step.size() << '\n';
-
-	int isum = 0;
-	for (auto& el : res.initiator)
-		isum += el;
-	std::cout << "isum=" << isum << '\n';
-	int ssum = 0;
-	for (auto& el : res.step)
-		ssum += el;
-	std::cout << "ssum=" << ssum << '\n';
-
 	apply_tick(res, trades.price);
 
 	for (int i = 0; i < res.step.size(); ++i)
@@ -114,13 +100,9 @@ KTC_FiAlgo::extract_variables(
 
 	fp_vector askit = interpolate_time(ask.time);
 	fp_vector bidit = interpolate_time(bid.time);
-	debug_vector(askit);
-	debug_vector(bidit);
 
 	int_vector askp(ask.price.begin(), ask.price.end());
 	int_vector bidp(bid.price.begin(), bid.price.end());
-	debug_vector(askp);
-	debug_vector(bidp);
 
 	int_vector askv(ask.volume.begin(), ask.volume.end());
 	int_vector bidv(bid.volume.begin(), bid.volume.end());
@@ -129,18 +111,6 @@ KTC_FiAlgo::extract_variables(
 		askv = KTC_FiAlgo::delta_vol(askp, askv);
 		bidv = KTC_FiAlgo::delta_vol(bidp, bidv, false);
 	}
-	debug_vector(askv);
-	debug_vector(bidv);
-
-	int avsum = 0;
-	for (auto& el : askv)
-		avsum += el;
-	std::cout << "avsum=" << avsum << '\n';
-
-	int bvsum = 0;
-	for (auto& el : bidv)
-		bvsum += el;
-	std::cout << "bvsum=" << bvsum << '\n';
 
 	int_vector tr_n(t_time_unique.size(), 0);
 	FP_TYPE last_seen = -1.0;
@@ -155,12 +125,6 @@ KTC_FiAlgo::extract_variables(
 			last_seen = el;
 		}
 	}
-	debug_vector_n(tr_n, 5);
-	int tr_nsum = 0;
-	for (auto& el : tr_n)
-		tr_nsum += el;
-	std::cout << "tr_nsize=" << tr_n.size() << '\n';
-	std::cout << "tr_nsum=" << tr_nsum << '\n';
 
 	int_vector p(trades.price.begin(), trades.price.end());
 	int_vector v(trades.volume.begin(), trades.volume.end());
