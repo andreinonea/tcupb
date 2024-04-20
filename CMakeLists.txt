@@ -25,6 +25,7 @@ FetchContent_MakeAvailable(DataFrame)
 
 add_library("${PROJECT_NAME}")
 target_sources("${PROJECT_NAME}" PRIVATE
+	BulkVolume.cpp
 	FullInformation.cpp
 	tc.cpp
 	Utils.cpp
