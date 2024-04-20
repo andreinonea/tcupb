@@ -7,8 +7,10 @@ project(tcupb
 	HOMEPAGE_URL "https://github.com/andreinonea/tcupb"
 )
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
+
+option(BUILD_TEST "Set this flag to generate test binary that loops over all datasets and reports failed cases" ON)
 
 include(FetchContent)
 FetchContent_Declare(
@@ -55,3 +57,24 @@ install(TARGETS "${PROJECT_NAME}"
 install(TARGETS "${PROJECT_NAME}-cli"
 	RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
 )
+
+if(BUILD_TEST)
+	find_package(OpenMP REQUIRED)
+	find_package(Python REQUIRED Development)
+
+	add_executable("${PROJECT_NAME}-test")
+	target_sources("${PROJECT_NAME}-test" PRIVATE
+		test.cpp
+	)
+
+	target_link_libraries("${PROJECT_NAME}-test" PRIVATE
+		"${PROJECT_NAME}"
+		DataFrame
+		OpenMP::OpenMP_CXX
+		Python::Python
+	)
+
+	install(TARGETS "${PROJECT_NAME}-test"
+		RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+	)
+endif(BUILD_TEST)
