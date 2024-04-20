@@ -5,18 +5,21 @@
 do { \
 	std::cout << #v " [ "; \
 \
-	auto fwd_mark = std::next(v.begin(), n); \
-	if (fwd_mark > v.end()) fwd_mark = v.end(); \
-\
-	for (auto it = v.begin(); it != fwd_mark; ++it) \
-		std::cout << *it << " "; \
-\
-	auto bwd_mark = std::prev(v.end(), n); \
-	if (bwd_mark <= fwd_mark) bwd_mark = fwd_mark; \
-	else std::cout << "... "; \
-\
-	for (auto it = bwd_mark; it != v.end(); ++it) \
-		std::cout << *it << " "; \
+	if (v.size() > 0) \
+	{ \
+		auto fwd_mark = std::next(v.begin(), n); \
+		if (fwd_mark > v.end()) fwd_mark = v.end(); \
+	\
+		for (auto it = v.begin(); it != fwd_mark; ++it) \
+			std::cout << *it << " "; \
+	\
+		auto bwd_mark = std::prev(v.end(), n); \
+		if (bwd_mark <= fwd_mark) bwd_mark = fwd_mark; \
+		else std::cout << "... "; \
+	\
+		for (auto it = bwd_mark; it != v.end(); ++it) \
+			std::cout << *it << " "; \
+	} \
 \
 	std::cout << "]\n"; \
 } while (0)

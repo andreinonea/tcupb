@@ -5,6 +5,7 @@
 
 #include "csv.h"
 #include "Utils.h"
+#include "BulkVolume.h"
 #include "FullInformation.h"
 
 
@@ -61,7 +62,8 @@ main()
 	KTC_Data ask{}, bid{};
 	load_quotes_from_csv(ask, bid, "AAPL_quotes_2021-10-26.csv");
 
-	KTC_Result res = KTC_FiAlgo::classify(KTC_FiAlgoVersion::DS_3, trades, ask, bid, 0.6);
+	// KTC_Result res = KTC_FiAlgo::classify(KTC_FiAlgoVersion::DS_3, trades, ask, bid, 0.6);
+	KTC_Result res = KTC_Bvc::classify(trades);
 
 	std::cout << "\n\n==== FINAL ====\n";
 
