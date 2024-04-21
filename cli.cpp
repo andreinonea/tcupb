@@ -1,4 +1,5 @@
 #include <iostream>
+#include <optional>
 #include <vector>
 
 #include <DataFrame/Utils/DateTime.h>
@@ -7,6 +8,7 @@
 #include "Utils.h"
 #include "BulkVolume.h"
 #include "FullInformation.h"
+#include "LeeReady.h"
 
 
 void
@@ -63,11 +65,6 @@ main()
 	load_quotes_from_csv(ask, bid, "AAPL_quotes_2021-10-26.csv");
 
 	// KTC_FiAlgo::Result res = KTC_FiAlgo::classify(KTC_FiAlgoVersion::DS_3, trades, ask, bid, 0.6);
-
-	INT_TYPE start = 3;
-	// KTC_Bvc::Result res =
-	KTC_Bvc::classify(trades, 5, &start, KTC_BvcWindowType::PER_TRADE, KTC_BvcDofType::NORMAL);
-
 	// std::cout << "\n\n==== FINAL ====\n";
 
 	// debug_vector_n(res.initiator, 5);
@@ -83,6 +80,12 @@ main()
 	// for (auto& el : res.step)
 	// 	ssum += el;
 	// std::cout << "ssum=" << ssum << '\n';
+
+	// INT_TYPE start = 3;
+	// std::optional<KTC_Bvc::Result> res = KTC_Bvc::classify(
+	// 	trades, 5, &start, KTC_BvcWindowType::PER_TRADE, KTC_BvcDofType::NORMAL);
+
+	KTC_Result res = LeeReady::classify(trades, ask, bid, true);
 
 	return 0;
 }

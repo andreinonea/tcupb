@@ -112,15 +112,20 @@ do { \
 #include <functional>
 #include <utility>
 #include <vector>
+#include <map>
+#include <cmath>
 
 typedef bool BOOL_TYPE;
 typedef unsigned char UCHAR_TYPE;
 typedef int INT_TYPE;
 typedef unsigned int UINT_TYPE;
 typedef long double FP_TYPE;
+typedef std::pair<FP_TYPE, FP_TYPE> fp_pair;
+typedef std::vector<fp_pair> quotes_type;
 
 typedef std::vector<INT_TYPE> int_vector;
 typedef std::vector<FP_TYPE> fp_vector;
+typedef std::vector<BOOL_TYPE> bool_vector;
 typedef std::vector<fp_vector> fp_matrix;
 
 #define fp_inf() std::numeric_limits<FP_TYPE>::infinity()
@@ -368,10 +373,18 @@ struct KTC_Result
 	int_vector initiator;
 };
 
+struct KTC_Interpolation
+{
+	fp_vector ask_time;
+	fp_vector bid_time;
+};
+
 KTC_Pair quote_index(const fp_vector &quote_times, const fp_vector &trade_times);
 fp_vector concat_runs(const int_vector &x, bool hj_version);
 fp_vector interpolate_time(const fp_vector &time, bool hj_version = false);
 void apply_tick(KTC_Result &res, const fp_vector &trade_prices);
-
+KTC_Interpolation tcol_interpolation(const fp_vector &ask_time, const fp_vector &bid_time);
+fp_vector get_midpoint(KTC_Interpolation interpolation, const fp_vector &ask_price, const fp_vector &bid_price, const fp_vector &trades_time);
+fp_vector get_lastquote(const fp_vector &quotes_time, const fp_vector &quote_price, const fp_vector &as_of);
 
 #endif // UPB_TC_UTILS_H_
