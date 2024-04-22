@@ -96,9 +96,11 @@ int_vector vec_less(const Iter a_begin, const Iter a_end, const Iter b_begin, co
 	auto a_range = std::distance(a_begin, a_end);
 	auto b_range = std::distance(b_begin, b_end);
 	assert(a_range == b_range);
-	int_vector d(a_range, 0);
 
-	for (auto a_it = a_begin, b_it = b_begin, d_it = d.begin(); a_it < a_end && b_it < b_end && d_it < d.end(); ++a_it, ++b_it, ++d_it)
+	int_vector d(a_range, 0);
+	auto d_it = d.begin();
+
+	for (auto a_it = a_begin, b_it = b_begin; a_it < a_end && b_it < b_end && d_it < d.end(); ++a_it, ++b_it, ++d_it)
 		if (*a_it < *b_it)
 			*d_it = 1;
 
@@ -124,9 +126,11 @@ int_vector vec_greater(const Iter a_begin, const Iter a_end, const Iter b_begin,
 	auto a_range = std::distance(a_begin, a_end);
 	auto b_range = std::distance(b_begin, b_end);
 	assert(a_range == b_range);
-	int_vector d(a_range, 0);
 
-	for (auto a_it = a_begin, b_it = b_begin, d_it = d.begin(); a_it < a_end && b_it < b_end && d_it < d.end(); ++a_it, ++b_it, ++d_it)
+	int_vector d(a_range, 0);
+	auto d_it = d.begin();
+
+	for (auto a_it = a_begin, b_it = b_begin; a_it < a_end && b_it < b_end && d_it < d.end(); ++a_it, ++b_it, ++d_it)
 		if (*a_it > *b_it)
 			*d_it = 1;
 
