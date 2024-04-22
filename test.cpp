@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include <omp.h>
 #include <DataFrame/Utils/DateTime.h>
 #include <Python.h>
 
