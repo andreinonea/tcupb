@@ -1,7 +1,12 @@
 #ifndef UPB_TC_UTILS_H_
 #define UPB_TC_UTILS_H_
 
-#define debug_vector_n(v, n) \
+#include <cmath>
+#include <numeric>
+
+// TODO: remove
+#include <iostream>
+
 do { \
 	std::cout << #v " [ "; \
 \
@@ -51,7 +56,7 @@ typedef std::vector<FP_TYPE> fp_vector;
 
 // Vector utils
 template <typename T>
-std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b)
+std::vector<T> operator+(const std::vector<T> &a, const std::vector<T> &b)
 {
 	assert(a.size() == b.size());
 	std::vector<T> result;
@@ -62,12 +67,41 @@ std::vector<T> operator+(const std::vector<T>& a, const std::vector<T>& b)
 }
 
 template <typename T>
+std::vector<T> operator-(const std::vector<T> &a, const std::vector<T> &b)
+{
+	assert(a.size() == b.size());
+	std::vector<T> result;
+	result.reserve(a.size());
+
+	std::transform(a.begin(), a.end(), b.begin(), std::back_inserter(result), std::minus<T>());
+	return result;
+}
+
+template <typename T>
+std::vector<T>& operator-=(std::vector<T> &vec, const T &val)
+{
+	for (auto &el : vec)
+		el -= val;
+	return vec;
+}
+
+template <typename T>
 std::vector<T>& operator*=(std::vector<T> &vec, const T &val)
 {
 	for (auto &el : vec)
 		el *= val;
 	return vec;
 }
+
+template <typename T>
+std::vector<T>& operator/=(std::vector<T> &vec, const T &val)
+{
+	for (auto &el : vec)
+		el /= val;
+	return vec;
+}
+
+int_vector vec_nonzero(const fp_vector &v);
 
 template <typename T>
 std::vector<T> vec_diff(const std::vector<T> &v)
@@ -140,7 +174,72 @@ int_vector vec_greater(const Iter a_begin, const Iter a_end, const Iter b_begin,
 	return d;
 }
 
-int_vector vec_nonzero(const fp_vector &v);
+template <typename T>
+std::vector<T> vec_unique(const std::vector<T> &v)
+{
+	std::vector<T> v_unique{};
+	std::copy(v.begin(), v.end(), std::back_inserter(v_unique));
+	std::sort(v_unique.begin(), v_unique.end());
+	auto fin = std::unique(v_unique.begin(), v_unique.end());
+	v_unique.resize(std::distance(v_unique.begin(), fin));
+	return v_unique;
+}
+
+enum class Side : UINT_TYPE
+{
+	LEFT = 0,
+	RIGHT
+};
+
+// TODO: give credit where credit is due!
+template<typename T>
+INT_TYPE vec_searchsorted(const std::vector<T> &a, T v, Side side = Side::LEFT)
+{
+	switch (side)
+	{
+		case Side::LEFT:
+		{
+			return std::distance(a.begin(), std::lower_bound(a.begin(), a.end(), v));
+		}
+		case Side::RIGHT:
+		{
+			return std::distance(a.begin(), std::upper_bound(a.begin(), a.end(), v));
+		}
+	}
+
+	// get rid of compiler warning
+	return {};
+}
+
+template<typename T>
+int_vector vec_searchsorted(const std::vector<T> &a, const std::vector<T> &v, Side side = Side::LEFT)
+{
+	int_vector indices(v.size(), 0);
+	std::transform(v.begin(),
+								 v.end(),
+								 indices.begin(),
+								 [&a, side](const auto& value) { return vec_searchsorted(a, value, side); });
+	return indices;
+}
+
+template <typename T>
+FP_TYPE vec_mean(const std::vector<T> &v)
+{
+	auto sum = std::accumulate(v.begin(), v.end(), 0.0);
+	return sum /= static_cast<FP_TYPE>(v.size());
+}
+
+template <typename T>
+FP_TYPE vec_std(const std::vector<T> &v, INT_TYPE ddof = 0)
+{
+	FP_TYPE mean = vec_mean(v);
+	FP_TYPE sum = 0.0;
+
+	for (const auto &el : v)
+		sum += std::pow((static_cast<FP_TYPE>(el) - mean), 2);
+
+	return std::sqrt(sum / (static_cast<FP_TYPE>(v.size()) - static_cast<FP_TYPE>(ddof)));
+}
 
 struct KTC_Data
 {
