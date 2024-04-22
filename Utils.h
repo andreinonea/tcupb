@@ -7,8 +7,10 @@
 // TODO: remove
 #include <iostream>
 
+#define debug_vector_n_priv(v, n, inmatrix) \
 do { \
-	std::cout << #v " [ "; \
+	if (!inmatrix) std::cout << #v " "; \
+	std::cout << "[ "; \
 \
 	if (v.size() > 0) \
 	{ \
@@ -26,8 +28,11 @@ do { \
 			std::cout << *it << " "; \
 	} \
 \
-	std::cout << "]\n"; \
+	std::cout << "]"; \
+	if (!inmatrix) std::cout << '\n'; \
 } while (0)
+
+#define debug_vector_n(v, n) debug_vector_n_priv(v, n, 0)
 
 #define debug_vector_all(v) \
 do { \
@@ -38,6 +43,62 @@ do { \
 } while (0)
 
 #define debug_vector(v) debug_vector_n(v, 3)
+
+#define debug_vector_extra(v) \
+do { \
+	auto sum = 0.0; \
+	for (const auto& el : v) \
+		sum += el; \
+	std::cout << "sum(" #v ")=" << sum << '\n'; \
+	std::cout << "size(" #v ")=" << v.size() << '\n'; \
+} while (0)
+
+#define debug_matrix_n(m, n) \
+do { \
+	std::cout << #m; \
+	if (m.size() > 0) \
+	{ \
+		bool first = true; \
+		for (const auto &v : m) \
+		{ \
+			if (first) \
+			{ \
+				first = false; \
+				std::cout << "\n["; \
+				debug_vector_n_priv(v, n, 1); \
+			} \
+			else \
+			{ \
+				std::cout << "\n "; \
+				debug_vector_n_priv(v, n, 1); \
+			} \
+		} \
+		std::cout << "]\n"; \
+	} \
+	else std::cout << " [[]]\n"; \
+} while (0)
+
+#define debug_matrix(m) debug_matrix_n(m, 3)
+
+#define debug_matrix_extra(m) \
+do { \
+	auto sum = 0.0; \
+	auto rows = m.size(); \
+	auto columns = 0, cur_cols = 0; \
+	if (rows > 0) \
+	{ \
+		columns = m[0].size(); \
+		for (const auto& r : m) \
+		{ \
+			cur_cols = r.size(); \
+			if (cur_cols != columns) columns = -1; \
+			for (const auto& el : r) \
+				sum += el; \
+		} \
+	} \
+	std::cout << "sum(" #m ")=" << sum << '\n'; \
+	std::cout << "size(" #m ")=" << '(' << rows << ',' << columns << ')' << '\n'; \
+} while (0)
 
 #include <algorithm>
 #include <cassert>
@@ -53,6 +114,7 @@ typedef long double FP_TYPE;
 
 typedef std::vector<INT_TYPE> int_vector;
 typedef std::vector<FP_TYPE> fp_vector;
+typedef std::vector<fp_vector> fp_matrix;
 
 // Vector utils
 template <typename T>
