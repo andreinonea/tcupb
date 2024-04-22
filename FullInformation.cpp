@@ -2,7 +2,6 @@
 #include "Utils.h"
 
 #include <algorithm>
-#include <iostream>
 
 KTC_Result
 KTC_FiAlgo::classify(

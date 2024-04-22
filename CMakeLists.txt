@@ -13,6 +13,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 option(BUILD_TEST "Set this flag to generate test binary that loops over all datasets and reports failed cases" ON)
 
 include(FetchContent)
+
 FetchContent_Declare(
 	DataFrame
 	GIT_REPOSITORY https://github.com/hosseinmoein/DataFrame.git
