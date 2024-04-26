@@ -37,48 +37,6 @@ KTC_FiAlgo::classify(
 	return res;
 }
 
-int_vector
-KTC_FiAlgo::delta_vol(const int_vector &price, const int_vector &volume, bool is_ask)
-{
-	int_vector vdiff = vec_diff(volume);
-	vdiff.push_back(0);
-	vdiff *= -1;
-
-	auto p_second_last = std::prev(price.end());
-	auto p_second = std::next(price.begin());
-
-	int_vector up = vec_less(price.begin(), p_second_last, p_second, price.end());
-	up.push_back(0);
-
-	int_vector down = vec_greater(price.begin(), p_second_last, p_second, price.end());
-	down.push_back(0);
-
-	if (is_ask)
-	{
-		for (int i = 0; i < vdiff.size(); ++i)
-		{
-			if (up[i] == 1)
-				vdiff[i] = volume[i];
-
-			if (down[i] == 1)
-				vdiff[i] = -1;
-		}
-	}
-	else
-	{
-		for (int i = 0; i < vdiff.size(); ++i)
-		{
-			if (down[i] == 1)
-				vdiff[i] = volume[i];
-
-			if (up[i] == 1)
-				vdiff[i] = -1;
-		}
-	}
-
-	return vdiff;
-}
-
 KTC_FiAlgoVariables
 KTC_FiAlgo::extract_variables(
 	const KTC_FiAlgoVersion version,
@@ -143,6 +101,48 @@ KTC_FiAlgo::extract_variables(
 		.atime = askit,
 		.btime = bidit,
 	};
+}
+
+int_vector
+KTC_FiAlgo::delta_vol(const int_vector &price, const int_vector &volume, bool is_ask)
+{
+	int_vector vdiff = vec_diff(volume);
+	vdiff.push_back(0);
+	vdiff *= -1;
+
+	auto p_second_last = std::prev(price.end());
+	auto p_second = std::next(price.begin());
+
+	int_vector up = vec_less(price.begin(), p_second_last, p_second, price.end());
+	up.push_back(0);
+
+	int_vector down = vec_greater(price.begin(), p_second_last, p_second, price.end());
+	down.push_back(0);
+
+	if (is_ask)
+	{
+		for (int i = 0; i < vdiff.size(); ++i)
+		{
+			if (up[i] == 1)
+				vdiff[i] = volume[i];
+
+			if (down[i] == 1)
+				vdiff[i] = -1;
+		}
+	}
+	else
+	{
+		for (int i = 0; i < vdiff.size(); ++i)
+		{
+			if (down[i] == 1)
+				vdiff[i] = volume[i];
+
+			if (up[i] == 1)
+				vdiff[i] = -1;
+		}
+	}
+
+	return vdiff;
 }
 
 KTC_Result
