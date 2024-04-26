@@ -24,6 +24,8 @@ FetchContent_Declare(
 # This will try calling find_package() first for the dependencies
 FetchContent_MakeAvailable(DataFrame)
 
+find_package(Boost)
+
 add_library("${PROJECT_NAME}")
 target_sources("${PROJECT_NAME}" PRIVATE
 	BulkVolume.cpp
@@ -37,6 +39,10 @@ target_sources("${PROJECT_NAME}" PRIVATE
 # set_property(TARGET "${PROJECT_NAME}" PROPERTY
 # 	PUBLIC_HEADER "${TCUPB_HEADERS}"
 # )
+
+target_link_libraries("${PROJECT_NAME}" PRIVATE
+	Boost::boost
+)
 
 add_executable("${PROJECT_NAME}-cli")
 target_sources("${PROJECT_NAME}-cli" PRIVATE

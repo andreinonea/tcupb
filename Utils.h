@@ -1,11 +1,18 @@
 #ifndef UPB_TC_UTILS_H_
 #define UPB_TC_UTILS_H_
 
+#include <algorithm>
 #include <cmath>
 #include <numeric>
+#include <vector>
 
 // TODO: remove
 #include <iostream>
+
+#define debug_val(v) \
+do { \
+	std::cout << #v "=" << v << '\n'; \
+} while (0)
 
 #define debug_vector_n_priv(v, n, inmatrix) \
 do { \
@@ -115,6 +122,8 @@ typedef long double FP_TYPE;
 typedef std::vector<INT_TYPE> int_vector;
 typedef std::vector<FP_TYPE> fp_vector;
 typedef std::vector<fp_vector> fp_matrix;
+
+#define fp_inf() std::numeric_limits<FP_TYPE>::infinity()
 
 // Vector utils
 template <typename T>
@@ -245,6 +254,43 @@ std::vector<T> vec_unique(const std::vector<T> &v)
 	auto fin = std::unique(v_unique.begin(), v_unique.end());
 	v_unique.resize(std::distance(v_unique.begin(), fin));
 	return v_unique;
+}
+
+// Thanks to https://stackoverflow.com/a/12399290/20826565
+template <typename T>
+std::vector<size_t> vec_argsort(const std::vector<T> &v)
+{
+	std::vector<size_t> idx(v.size());
+	std::iota(idx.begin(), idx.end(), 0);
+
+	std::stable_sort(idx.begin(), idx.end(),
+		[&v](size_t i1, size_t i2) -> BOOL_TYPE {
+			return v[i1] < v[i2];
+		}
+	);
+
+	return idx;
+}
+
+// Thanks to https://stackoverflow.com/a/838789/20826565
+template<typename T>
+void vec_reorder(std::vector<T> &v, const std::vector<size_t> &order)
+{
+	assert(v.size() == order.size());
+	std::vector<size_t> ord(order.begin(), order.end());
+
+	for (size_t vv = 0; vv < v.size() - 1; ++vv)
+	{
+		if (ord[vv] == vv)
+			continue;
+
+		size_t oo;
+		for (oo = vv + 1; oo < ord.size(); ++oo)
+			if (ord[oo] == vv) break;
+
+		std::swap(v[vv], v[ord[vv]]);
+		std::swap(ord[vv], ord[oo]);
+	}
 }
 
 enum class Side : UINT_TYPE
