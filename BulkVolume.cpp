@@ -485,7 +485,7 @@ KTC_Bvc::penalized_nnlf(const fp_vector &theta, const fp_vector &x)
 
 	if (std::isinf(arg))
 	{
-		const FP_TYPE f = std::log(std::sqrt(2.0 * M_PIl));
+		const FP_TYPE f = std::log(std::sqrt(2.0 * M_PI));
 
 		for (auto &el : x)
 		{
@@ -498,7 +498,7 @@ KTC_Bvc::penalized_nnlf(const fp_vector &theta, const fp_vector &x)
 	}
 	else if (arg >= 200.0)
 	{
-		const FP_TYPE f = -0.5 * (1.0 + std::log(2.0 * M_PIl))
+		const FP_TYPE f = -0.5 * (1.0 + std::log(2.0 * M_PI))
 			+ arg / 2.0 * std::log(1.0 / (arg + 1.0))
 			+ 1.0 / 6.0 * std::pow((arg + 1), -1.0)
 			- 1.0 / 45.0 * std::pow((arg + 1), -3.0)
@@ -518,7 +518,7 @@ KTC_Bvc::penalized_nnlf(const fp_vector &theta, const fp_vector &x)
 	{
 		const FP_TYPE f = std::lgamma((arg + 1.0) / 2.0)
 			- std::lgamma(arg / 2.0)
-			- (0.5 * std::log(arg * M_PIl));
+			- (0.5 * std::log(arg * M_PI));
 
 		for (auto &el : x)
 		{
