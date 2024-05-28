@@ -2,17 +2,16 @@
 // Created by Mire on 21.04.2024.
 //
 
-#ifndef TCUPB_LEEREADY_H
-#define TCUPB_LEEREADY_H
+#ifndef UPB_TC_LEE_READY_H_
+#define UPB_TC_LEE_READY_H_
 
 #include "Utils.h"
 
-
-class LeeReady {
+class KTC_LeeReady
+{
 public:
-    static KTC_Result classify(const KTC_Data &trades, const KTC_Data &ask, const KTC_Data &bid, BOOL_TYPE interpolate);
-
+	using Result = KTC_Result;
+	static Result classify(const KTC_Data &trades, const KTC_Data &ask, const KTC_Data &bid, BOOL_TYPE interpolate);
 };
 
-
-#endif //TCUPB_LEEREADY_H
+#endif // UPB_TC_LEE_READY_H_

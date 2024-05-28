@@ -85,7 +85,7 @@ main()
 	// std::optional<KTC_Bvc::Result> res = KTC_Bvc::classify(
 	// 	trades, 5, &start, KTC_BvcWindowType::PER_TRADE, KTC_BvcDofType::NORMAL);
 
-	KTC_Result res = LeeReady::classify(trades, ask, bid, true);
+	KTC_LeeReady::Result res = KTC_LeeReady::classify(trades, ask, bid, true);
 
 	return 0;
 }
