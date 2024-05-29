@@ -65,21 +65,6 @@ main()
 	load_quotes_from_csv(ask, bid, "AAPL_quotes_2021-10-26.csv");
 
 	// KTC_FiAlgo::Result res = KTC_FiAlgo::classify(KTC_FiAlgoVersion::DS_3, trades, ask, bid, 0.6);
-	// std::cout << "\n\n==== FINAL ====\n";
-
-	// debug_vector_n(res.initiator, 5);
-	// debug_vector_n(res.step, 5);
-	// std::cout << "isize=" << res.initiator.size() << '\n';
-	// std::cout << "ssize=" << res.step.size() << '\n';
-
-	// int isum = 0;
-	// for (auto& el : res.initiator)
-	// 	isum += el;
-	// std::cout << "isum=" << isum << '\n';
-	// int ssum = 0;
-	// for (auto& el : res.step)
-	// 	ssum += el;
-	// std::cout << "ssum=" << ssum << '\n';
 
 	// INT_TYPE start = 3;
 	// std::optional<KTC_Bvc::Result> res = KTC_Bvc::classify(

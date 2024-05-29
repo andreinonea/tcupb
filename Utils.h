@@ -409,6 +409,37 @@ FP_TYPE vec_std(const std::vector<T> &v, INT_TYPE ddof = 0)
 	return std::sqrt(sum / (static_cast<FP_TYPE>(v.size()) - static_cast<FP_TYPE>(ddof)));
 }
 
+template <typename T, typename U>
+std::vector<T> vec_merge_left(const std::vector<U> &left_on, const std::vector<T> &right, const std::vector<U> &right_on)
+{
+	assert(right.size() == right_on.size());
+	std::vector<T> res;
+	res.reserve(left_on.size());
+
+	std::vector<T> right_sorted = right;
+	std::sort(right_sorted.begin(), right_sorted.end());
+	int r_idx = 0;
+
+	for (int i = 0; i < left_on.size(); ++i)
+	{
+		int ridx = -1;
+
+		for (int r = 0; r < right_on.size(); ++r)
+			if (left_on[i] == right_on[r])
+			{
+				ridx = r;
+				break;
+			}
+
+		if (ridx == -1)
+			res.push_back(fp_nan());
+		else
+			res.push_back(right[ridx]);
+	}
+
+	return res;
+}
+
 struct KTC_Data
 {
 	fp_vector time;
