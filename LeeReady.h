@@ -11,7 +11,7 @@ class KTC_LeeReady
 {
 public:
 	using Result = KTC_Result;
-	static Result classify(const KTC_Data &trades, const KTC_Data &ask, const KTC_Data &bid, BOOL_TYPE interpolate);
+	static Result classify(const KTC_Data &trades, const KTC_Data &ask, const KTC_Data &bid, BOOL_TYPE interpolate = false);
 };
 
 #endif // UPB_TC_LEE_READY_H_

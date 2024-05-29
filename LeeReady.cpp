@@ -8,7 +8,6 @@
 #include <cmath>
 #include <iostream>
 #include <numeric>
-#include <unordered_set>
 #include <vector>
 
 KTC_LeeReady::Result
@@ -18,22 +17,24 @@ KTC_LeeReady::classify(
 	const KTC_Data &bid,
 	BOOL_TYPE interpolate)
 {
-	KTC_Interpolation ktcInterpolation;
+	fp_vector trades_time = trades.time;
+	fp_vector ask_time = ask.time;
+	fp_vector bid_time = bid.time;
+
 	if (interpolate)
-			ktcInterpolation = tcol_interpolation(ask.time, bid.time);
-	else
-			ktcInterpolation = KTC_Interpolation { ask.time, bid.time };
+	{
+		trades_time = interpolate_time(trades.time, true);
+		ask_time = interpolate_time(ask.time, true);
+		bid_time = interpolate_time(bid.time, true);
+	}
 
-	fp_vector unique_times;
-	unique_times.reserve(trades.time.size());
+	trades_time = vec_unique(trades_time);
+	std::sort(ask_time.begin(), ask_time.end());
+	std::sort(bid_time.begin(), bid_time.end());
 
-	std::unordered_set<FP_TYPE> seen;
+	fp_vector midpoint = get_midpoint(ask_time, bid_time, ask.price, bid.price, trades_time);
 
-	for (auto &time : trades.time)
-		if (seen.insert(time).second)
-			unique_times.push_back(time);
-
-	fp_vector midpoint = get_midpoint(ktcInterpolation, ask.price, bid.price, unique_times);
+	// TODO: BELOW UNKNOWN
 
 	FP_TYPE max_val = -fp_inf();
 	FP_TYPE min_val = fp_inf();

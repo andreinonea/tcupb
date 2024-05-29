@@ -6,6 +6,7 @@
 #include <cmath>
 #include <functional>
 #include <numeric>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 // #include <map>
@@ -21,10 +22,10 @@ typedef long double FP_TYPE;
 
 typedef std::vector<INT_TYPE> int_vector;
 typedef std::vector<FP_TYPE> fp_vector;
-typedef std::vector<BOOL_TYPE> bool_vector;
 typedef std::vector<fp_vector> fp_matrix;
 
 #define fp_inf() std::numeric_limits<FP_TYPE>::infinity()
+#define fp_nan() std::numeric_limits<FP_TYPE>::quiet_NaN()
 
 #define debug_val(v) \
 do { \
@@ -247,6 +248,20 @@ int_vector vec_greater(const Iter a_begin, const Iter a_end, const Iter b_begin,
 template <typename T>
 std::vector<T> vec_unique(const std::vector<T> &v)
 {
+	std::vector<T> unique;
+	std::unordered_set<T> seen;
+	unique.reserve(v.size());
+
+	for (const auto &el : v)
+		if (seen.insert(el).second)
+			unique.push_back(el);
+
+	return unique;
+}
+
+template <typename T>
+std::vector<T> vec_sort_unique(const std::vector<T> &v)
+{
 	std::vector<T> v_unique{};
 	std::copy(v.begin(), v.end(), std::back_inserter(v_unique));
 	std::sort(v_unique.begin(), v_unique.end());
@@ -299,6 +314,7 @@ enum class Side : UINT_TYPE
 };
 
 // TODO: give credit where credit is due!
+// https://github.com/dpilger26/NumCpp/blob/5e40aab74d14e257d65d3dc385c9ff9e2120c60e/include/NumCpp/Functions/searchsorted.hpp
 template<typename T>
 INT_TYPE vec_searchsorted(const std::vector<T> &a, T v, Side side = Side::LEFT)
 {
@@ -321,11 +337,56 @@ INT_TYPE vec_searchsorted(const std::vector<T> &a, T v, Side side = Side::LEFT)
 template<typename T>
 int_vector vec_searchsorted(const std::vector<T> &a, const std::vector<T> &v, Side side = Side::LEFT)
 {
-	int_vector indices(v.size(), 0);
+	int_vector indices(v.size());
 	std::transform(v.begin(),
 								 v.end(),
 								 indices.begin(),
-								 [&a, side](const auto& value) { return vec_searchsorted(a, value, side); });
+								 [&a, side](const auto &value) { return vec_searchsorted(a, value, side); });
+	return indices;
+}
+
+// https://github.com/numpy/numpy/blob/main/numpy/_core/src/npysort/binsearch.cpp#L61
+template<typename T>
+int_vector np_searchsorted(const std::vector<T> &a, const std::vector<T> &v, Side side = Side::LEFT)
+{
+	if (v.size() == 0) return {};
+	int_vector indices(v.size());
+	auto ind = indices.begin();
+
+	INT_TYPE min_idx = 0, max_idx = a.size();
+	T last_val = v[0];
+
+	const auto cmp = [side](const T &a, const T &b) {
+		if (side == Side::LEFT)
+			return a < b;
+		return a <= b;
+	};
+
+	for (const auto &val : v)
+	{
+		if (cmp(last_val, val))
+			max_idx = a.size();
+		else
+		{
+			min_idx = 0;
+			max_idx = (max_idx < a.size()) ? (max_idx + 1) : a.size();
+		}
+
+		last_val = val;
+
+		while (min_idx < max_idx)
+		{
+			INT_TYPE mid_idx = min_idx + ((max_idx - min_idx) >> 1);
+			T mid_val = a[mid_idx];
+			if (cmp(mid_val, val))
+				min_idx = mid_idx + 1;
+			else
+				max_idx = mid_idx;
+		}
+
+		*ind++ = min_idx;
+	}
+
 	return indices;
 }
 
@@ -367,18 +428,11 @@ struct KTC_Result
 	int_vector initiator;
 };
 
-struct KTC_Interpolation
-{
-	fp_vector ask_time;
-	fp_vector bid_time;
-};
-
 KTC_Pair quote_index(const fp_vector &quote_times, const fp_vector &trade_times);
 fp_vector concat_runs(const int_vector &x, bool hj_version);
 fp_vector interpolate_time(const fp_vector &time, bool hj_version = false);
 void apply_tick(KTC_Result &res, const fp_vector &trade_prices);
-KTC_Interpolation tcol_interpolation(const fp_vector &ask_time, const fp_vector &bid_time);
-fp_vector get_midpoint(const KTC_Interpolation &interpolation, const fp_vector &ask_price, const fp_vector &bid_price, const fp_vector &trades_time);
-fp_vector get_lastquote(const fp_vector &quotes_time, const fp_vector &quote_price, const fp_vector &as_of);
+fp_vector get_midpoint(const fp_vector &ask_time, const fp_vector &bid_time, const fp_vector &ask_price, const fp_vector &bid_price, const fp_vector &trades_time);
+fp_vector get_lastquote(const fp_vector &quotes_time, const fp_vector &quotes_price, const fp_vector &trades_time);
 
 #endif // UPB_TC_UTILS_H_

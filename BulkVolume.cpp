@@ -102,7 +102,7 @@ KTC_Bvc::classify(
 		debug_vector(group);
 		debug_vector_extra(group);
 
-		int_vector group_unique = vec_unique(group);
+		int_vector group_unique = vec_sort_unique(group);
 
 		debug_vector(group_unique);
 		debug_vector_extra(group_unique);
@@ -249,7 +249,7 @@ KTC_Bvc::norm_cdf(const fp_vector &x)
 		FP_TYPE xi = (x[i] - loc) / scale;
 
 		if (std::isnan(xi))
-			out[i] = std::nanl("");
+			out[i] = fp_nan();
 		else if (xi > 0 && std::isinf(xi))
 			out[i] = 1.0;
 		else if (std::isfinite(xi))
@@ -275,7 +275,7 @@ KTC_Bvc::t_cdf(const fp_vector &x, FP_TYPE dof)
 		FP_TYPE xi = (x[i] - loc) / scale;
 
 		if (!dof_ispos && std::isnan(xi))
-			out[i] = std::nanl("");
+			out[i] = fp_nan();
 		else if (dof_ispos && xi > 0 && std::isinf(xi))
 			out[i] = 1.0;
 		else if (dof_ispos && std::isfinite(xi))

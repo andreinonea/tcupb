@@ -187,58 +187,23 @@ apply_tick(KTC_Result &res, const fp_vector &trade_prices)
 		}
 }
 
-KTC_Interpolation
-tcol_interpolation(const fp_vector &ask_time, const fp_vector &bid_time)
-{
-	fp_vector askit = interpolate_time(ask_time);
-	fp_vector bidit = interpolate_time(bid_time);
-
-	double askit_min = *std::min_element(askit.begin(), askit.end());
-	double askit_max = *std::max_element(askit.begin(), askit.end());
-	double askit_sum = std::accumulate(askit.begin(), askit.end(), 0.0);
-	size_t askit_len = askit.size();
-
-	double bidit_min = *std::min_element(bidit.begin(), bidit.end());
-	double bidit_max = *std::max_element(bidit.begin(), bidit.end());
-	double bidit_sum = std::accumulate(bidit.begin(), bidit.end(), 0.0);
-	size_t bidit_len = bidit.size();
-
-	// Printing the results:
-	std::cout << "For askit:\n";
-	std::cout << "Min: " << askit_min << "\n";
-	std::cout << "Max: " << askit_max << "\n";
-	std::cout << "Sum: " << askit_sum << "\n";
-	std::cout << "Length: " << askit_len << "\n";
-
-	std::cout << "\nFor bidit:\n";
-	std::cout << "Min: " << bidit_min << "\n";
-	std::cout << "Max: " << bidit_max << "\n";
-	std::cout << "Sum: " << bidit_sum << "\n";
-	std::cout << "Length: " << bidit_len << "\n";
-
-	return KTC_Interpolation{askit, bidit};
-}
-
 fp_vector
 get_midpoint(
-	const KTC_Interpolation &interpolation,
+	const fp_vector &ask_time,
+	const fp_vector &bid_time,
 	const fp_vector &ask_price,
 	const fp_vector &bid_price,
 	const fp_vector &trades_time)
 {
-	fp_vector ask = get_lastquote(interpolation.ask_time, ask_price, trades_time);
-	fp_vector bid = get_lastquote(interpolation.bid_time, bid_price, trades_time);
-
+	fp_vector ask = get_lastquote(ask_time, ask_price, trades_time);
+	fp_vector bid = get_lastquote(bid_time, bid_price, trades_time);
 	fp_vector midpoint(ask.size());
 
-	for (std::size_t i = 0; i < ask.size(); ++i)
-		midpoint[i] = (ask[i] + bid[i]) / 2.0L;
-
-	double NaN = std::numeric_limits<double>::quiet_NaN();
-
-	for (std::size_t i = 0; i < ask.size(); ++i)
+	for (int i = 0; i < midpoint.size(); ++i)
 		if (ask[i] < bid[i])
-			midpoint[i] = NaN;
+			midpoint[i] = fp_nan();
+		else
+			midpoint[i] = (ask[i] + bid[i]) / 2.0;
 
 	return midpoint;
 }
@@ -246,45 +211,20 @@ get_midpoint(
 fp_vector
 get_lastquote(
 	const fp_vector &quotes_time,
-	const fp_vector &quote_price,
-	const fp_vector &as_of)
+	const fp_vector &quotes_price,
+	const fp_vector &trades_time)
 {
-	std::vector<FP_TYPE> sorted_quotes_time = quotes_time;
-	std::vector<FP_TYPE> sorted_as_of = as_of;
+	fp_vector last_quote(trades_time.size(), 0.0);
+	int_vector ind = vec_searchsorted(quotes_time, trades_time, Side::LEFT);
 
-	// Sort the copied vectors
-	std::sort(sorted_quotes_time.begin(), sorted_quotes_time.end());
-	std::sort(sorted_as_of.begin(), sorted_as_of.end());
-	std::vector<int> indices;
-
-	for (const auto& value: sorted_as_of)
+	for (int i = 0; i < ind.size(); ++i)
 	{
-		auto it = std::lower_bound(sorted_quotes_time.begin(), sorted_quotes_time.end(), value);
-		int ind = std::distance(sorted_quotes_time.begin(), it);
-
-		// Mimic Python's behavior when value is less than any element in quotes_time.
-		if (it == sorted_quotes_time.begin() && *it != value)
-			ind--;
-
-		indices.push_back(ind);
+		--ind[i];
+		if (ind[i] < 0)
+			last_quote[i] = fp_nan();
+		else
+			last_quote[i] = quotes_price[ind[i]];
 	}
-
-	fp_vector last_quote(as_of.size(), 0.0);
-
-	bool_vector mask;
-	mask.reserve(indices.size());
-	for (const auto &index: indices)
-		mask.push_back(index >= 0);
-
-	for (size_t i = 0; i < indices.size(); i++)
-		if (mask[i] && indices[i] > 0)
-			last_quote[i] = quote_price[indices[i] - 1];
-
-	double NaN = std::numeric_limits<double>::quiet_NaN();
-
-	for (int i = 0; i < mask.size(); i++)
-		if (!mask[i]) // If mask[i] is false, update the corresponding value in last_quote
-			last_quote[i] = NaN;
 
 	return last_quote;
 }
