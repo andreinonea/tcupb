@@ -2,12 +2,30 @@
 #define UPB_TC_UTILS_H_
 
 #include <algorithm>
+#include <cassert>
 #include <cmath>
+#include <functional>
 #include <numeric>
+#include <unordered_set>
+#include <utility>
 #include <vector>
+// #include <map>
 
 // TODO: remove
 #include <iostream>
+
+typedef bool BOOL_TYPE;
+typedef unsigned char UCHAR_TYPE;
+typedef int INT_TYPE;
+typedef unsigned int UINT_TYPE;
+typedef long double FP_TYPE;
+
+typedef std::vector<INT_TYPE> int_vector;
+typedef std::vector<FP_TYPE> fp_vector;
+typedef std::vector<fp_vector> fp_matrix;
+
+#define fp_inf() std::numeric_limits<FP_TYPE>::infinity()
+#define fp_nan() std::numeric_limits<FP_TYPE>::quiet_NaN()
 
 #define debug_val(v) \
 do { \
@@ -106,24 +124,6 @@ do { \
 	std::cout << "sum(" #m ")=" << sum << '\n'; \
 	std::cout << "size(" #m ")=" << '(' << rows << ',' << columns << ')' << '\n'; \
 } while (0)
-
-#include <algorithm>
-#include <cassert>
-#include <functional>
-#include <utility>
-#include <vector>
-
-typedef bool BOOL_TYPE;
-typedef unsigned char UCHAR_TYPE;
-typedef int INT_TYPE;
-typedef unsigned int UINT_TYPE;
-typedef long double FP_TYPE;
-
-typedef std::vector<INT_TYPE> int_vector;
-typedef std::vector<FP_TYPE> fp_vector;
-typedef std::vector<fp_vector> fp_matrix;
-
-#define fp_inf() std::numeric_limits<FP_TYPE>::infinity()
 
 // Vector utils
 template <typename T>
@@ -248,6 +248,20 @@ int_vector vec_greater(const Iter a_begin, const Iter a_end, const Iter b_begin,
 template <typename T>
 std::vector<T> vec_unique(const std::vector<T> &v)
 {
+	std::vector<T> unique;
+	std::unordered_set<T> seen;
+	unique.reserve(v.size());
+
+	for (const auto &el : v)
+		if (seen.insert(el).second)
+			unique.push_back(el);
+
+	return unique;
+}
+
+template <typename T>
+std::vector<T> vec_sort_unique(const std::vector<T> &v)
+{
 	std::vector<T> v_unique{};
 	std::copy(v.begin(), v.end(), std::back_inserter(v_unique));
 	std::sort(v_unique.begin(), v_unique.end());
@@ -300,6 +314,7 @@ enum class Side : UINT_TYPE
 };
 
 // TODO: give credit where credit is due!
+// https://github.com/dpilger26/NumCpp/blob/5e40aab74d14e257d65d3dc385c9ff9e2120c60e/include/NumCpp/Functions/searchsorted.hpp
 template<typename T>
 INT_TYPE vec_searchsorted(const std::vector<T> &a, T v, Side side = Side::LEFT)
 {
@@ -322,11 +337,56 @@ INT_TYPE vec_searchsorted(const std::vector<T> &a, T v, Side side = Side::LEFT)
 template<typename T>
 int_vector vec_searchsorted(const std::vector<T> &a, const std::vector<T> &v, Side side = Side::LEFT)
 {
-	int_vector indices(v.size(), 0);
+	int_vector indices(v.size());
 	std::transform(v.begin(),
 								 v.end(),
 								 indices.begin(),
-								 [&a, side](const auto& value) { return vec_searchsorted(a, value, side); });
+								 [&a, side](const auto &value) { return vec_searchsorted(a, value, side); });
+	return indices;
+}
+
+// https://github.com/numpy/numpy/blob/main/numpy/_core/src/npysort/binsearch.cpp#L61
+template<typename T>
+int_vector np_searchsorted(const std::vector<T> &a, const std::vector<T> &v, Side side = Side::LEFT)
+{
+	if (v.size() == 0) return {};
+	int_vector indices(v.size());
+	auto ind = indices.begin();
+
+	INT_TYPE min_idx = 0, max_idx = a.size();
+	T last_val = v[0];
+
+	const auto cmp = [side](const T &a, const T &b) {
+		if (side == Side::LEFT)
+			return a < b;
+		return a <= b;
+	};
+
+	for (const auto &val : v)
+	{
+		if (cmp(last_val, val))
+			max_idx = a.size();
+		else
+		{
+			min_idx = 0;
+			max_idx = (max_idx < a.size()) ? (max_idx + 1) : a.size();
+		}
+
+		last_val = val;
+
+		while (min_idx < max_idx)
+		{
+			INT_TYPE mid_idx = min_idx + ((max_idx - min_idx) >> 1);
+			T mid_val = a[mid_idx];
+			if (cmp(mid_val, val))
+				min_idx = mid_idx + 1;
+			else
+				max_idx = mid_idx;
+		}
+
+		*ind++ = min_idx;
+	}
+
 	return indices;
 }
 
@@ -347,6 +407,37 @@ FP_TYPE vec_std(const std::vector<T> &v, INT_TYPE ddof = 0)
 		sum += std::pow((static_cast<FP_TYPE>(el) - mean), 2);
 
 	return std::sqrt(sum / (static_cast<FP_TYPE>(v.size()) - static_cast<FP_TYPE>(ddof)));
+}
+
+template <typename T, typename U>
+std::vector<T> vec_merge_left(const std::vector<U> &left_on, const std::vector<T> &right, const std::vector<U> &right_on)
+{
+	assert(right.size() == right_on.size());
+	std::vector<T> res;
+	res.reserve(left_on.size());
+
+	std::vector<T> right_sorted = right;
+	std::sort(right_sorted.begin(), right_sorted.end());
+	int r_idx = 0;
+
+	for (int i = 0; i < left_on.size(); ++i)
+	{
+		int ridx = -1;
+
+		for (int r = 0; r < right_on.size(); ++r)
+			if (left_on[i] == right_on[r])
+			{
+				ridx = r;
+				break;
+			}
+
+		if (ridx == -1)
+			res.push_back(fp_nan());
+		else
+			res.push_back(right[ridx]);
+	}
+
+	return res;
 }
 
 struct KTC_Data
@@ -372,6 +463,7 @@ KTC_Pair quote_index(const fp_vector &quote_times, const fp_vector &trade_times)
 fp_vector concat_runs(const int_vector &x, bool hj_version);
 fp_vector interpolate_time(const fp_vector &time, bool hj_version = false);
 void apply_tick(KTC_Result &res, const fp_vector &trade_prices);
-
+fp_vector get_midpoint(const fp_vector &ask_time, const fp_vector &bid_time, const fp_vector &ask_price, const fp_vector &bid_price, const fp_vector &trades_time);
+fp_vector get_lastquote(const fp_vector &quotes_time, const fp_vector &quotes_price, const fp_vector &trades_time);
 
 #endif // UPB_TC_UTILS_H_

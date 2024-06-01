@@ -31,14 +31,14 @@ class KTC_FiAlgo
 {
 public:
 	using Result = KTC_Result;
-	static KTC_Result classify(const KTC_FiAlgoVersion version, const KTC_Data &trades, const KTC_Data &ask, const KTC_Data &bid, FP_TYPE bar = 0.3);
+	static Result classify(const KTC_FiAlgoVersion version, const KTC_Data &trades, const KTC_Data &ask, const KTC_Data &bid, FP_TYPE bar = 0.3);
 
 private:
 	static KTC_FiAlgoVariables extract_variables(const KTC_FiAlgoVersion version, const KTC_Data &trades, const KTC_Data &ask, const KTC_Data &bid);
 	static int_vector delta_vol(const int_vector &price, const int_vector &volume, bool is_ask = true);
-	static KTC_Result sign_trades_ds1(const KTC_FiAlgoVariables &vars, FP_TYPE bar);
-	static KTC_Result sign_trades_ds2(KTC_FiAlgoVariables &vars, FP_TYPE bar);
-	static KTC_Result sign_trades_ds3(KTC_FiAlgoVariables &vars, FP_TYPE bar);
+	static Result sign_trades_ds1(const KTC_FiAlgoVariables &vars, FP_TYPE bar);
+	static Result sign_trades_ds2(KTC_FiAlgoVariables &vars, FP_TYPE bar);
+	static Result sign_trades_ds3(KTC_FiAlgoVariables &vars, FP_TYPE bar);
 };
 
 #endif // UPB_TC_FULL_INFORMATION_H_

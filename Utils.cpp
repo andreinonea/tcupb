@@ -1,9 +1,11 @@
 #include "Utils.h"
 
-#include <iostream>
+#include <algorithm>
+#include <numeric>
 #include <queue>
 #include <utility>
 #include <vector>
+
 
 int_vector
 vec_nonzero(const fp_vector &v)
@@ -183,4 +185,46 @@ apply_tick(KTC_Result &res, const fp_vector &trade_prices)
 			res.initiator[i] = s.front();
 			s.pop();
 		}
+}
+
+fp_vector
+get_midpoint(
+	const fp_vector &ask_time,
+	const fp_vector &bid_time,
+	const fp_vector &ask_price,
+	const fp_vector &bid_price,
+	const fp_vector &trades_time)
+{
+	fp_vector ask = get_lastquote(ask_time, ask_price, trades_time);
+	fp_vector bid = get_lastquote(bid_time, bid_price, trades_time);
+	fp_vector midpoint(ask.size());
+
+	for (int i = 0; i < midpoint.size(); ++i)
+		if (ask[i] < bid[i])
+			midpoint[i] = fp_nan();
+		else
+			midpoint[i] = (ask[i] + bid[i]) / 2.0;
+
+	return midpoint;
+}
+
+fp_vector
+get_lastquote(
+	const fp_vector &quotes_time,
+	const fp_vector &quotes_price,
+	const fp_vector &trades_time)
+{
+	fp_vector last_quote(trades_time.size(), 0.0);
+	int_vector ind = vec_searchsorted(quotes_time, trades_time, Side::LEFT);
+
+	for (int i = 0; i < ind.size(); ++i)
+	{
+		--ind[i];
+		if (ind[i] < 0)
+			last_quote[i] = fp_nan();
+		else
+			last_quote[i] = quotes_price[ind[i]];
+	}
+
+	return last_quote;
 }

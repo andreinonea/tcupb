@@ -3,7 +3,7 @@
 
 #include <algorithm>
 
-KTC_Result
+KTC_FiAlgo::Result
 KTC_FiAlgo::classify(
 	const KTC_FiAlgoVersion version,
 	const KTC_Data &trades,
@@ -11,7 +11,7 @@ KTC_FiAlgo::classify(
 	const KTC_Data &bid,
 	FP_TYPE bar)
 {
-	KTC_Result res;
+	KTC_FiAlgo::Result res;
 	auto vars = KTC_FiAlgo::extract_variables(version, trades, ask, bid);
 
 	switch (version)
@@ -145,7 +145,7 @@ KTC_FiAlgo::delta_vol(const int_vector &price, const int_vector &volume, bool is
 	return vdiff;
 }
 
-KTC_Result
+KTC_FiAlgo::Result
 KTC_FiAlgo::sign_trades_ds1(const KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
 	INT_TYPE n = vars.Al.size();
@@ -252,10 +252,10 @@ KTC_FiAlgo::sign_trades_ds1(const KTC_FiAlgoVariables &vars, FP_TYPE bar)
 		}
 		ind += vars.runlength[j];
 	}
-	return KTC_Result { .step = c, .initiator = s };
+	return KTC_FiAlgo::Result { .step = c, .initiator = s };
 }
 
-KTC_Result
+KTC_FiAlgo::Result
 KTC_FiAlgo::sign_trades_ds2(KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
 	INT_TYPE n = vars.Al.size();
@@ -450,10 +450,10 @@ KTC_FiAlgo::sign_trades_ds2(KTC_FiAlgoVariables &vars, FP_TYPE bar)
 		ind += vars.runlength[j];
 	}
 
-	return KTC_Result { .step = c, .initiator = s };
+	return KTC_FiAlgo::Result { .step = c, .initiator = s };
 }
 
-KTC_Result
+KTC_FiAlgo::Result
 KTC_FiAlgo::sign_trades_ds3(KTC_FiAlgoVariables &vars, FP_TYPE bar)
 {
 	INT_TYPE n = vars.Al.size();
@@ -552,5 +552,5 @@ KTC_FiAlgo::sign_trades_ds3(KTC_FiAlgoVariables &vars, FP_TYPE bar)
 		ind += vars.runlength[j];
 	}
 
-	return KTC_Result { .step = c, .initiator = s };
+	return KTC_FiAlgo::Result { .step = c, .initiator = s };
 }
