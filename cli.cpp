@@ -9,6 +9,8 @@
 #include "BulkVolume.h"
 #include "FullInformation.h"
 #include "LeeReady.h"
+#include "Emo.h"
+#include "Clnv.h"
 
 
 void
@@ -59,10 +61,10 @@ main()
 	std::cout << std::fixed;
 
 	KTC_Data trades{};
-	load_trades_from_csv(trades, "AAPL_trades_2021-10-26.csv");
+	load_trades_from_csv(trades, "trades.csv");
 
 	KTC_Data ask{}, bid{};
-	load_quotes_from_csv(ask, bid, "AAPL_quotes_2021-10-26.csv");
+	load_quotes_from_csv(ask, bid, "ibm_quotes.csv");
 
 	// KTC_FiAlgo::Result res = KTC_FiAlgo::classify(KTC_FiAlgoVersion::DS_3, trades, ask, bid, 0.6);
 
@@ -70,7 +72,7 @@ main()
 	// std::optional<KTC_Bvc::Result> res = KTC_Bvc::classify(
 	// 	trades, 5, &start, KTC_BvcWindowType::PER_TRADE, KTC_BvcDofType::NORMAL);
 
-	KTC_LeeReady::Result res = KTC_LeeReady::classify(trades, ask, bid, true);
+	KTC_Clnv::Result res = KTC_Clnv::classify(trades, ask, bid, false);
 
 	return 0;
 }

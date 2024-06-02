@@ -13,7 +13,7 @@
 
 // TODO: remove
 #include <iostream>
-
+#include <map>
 typedef bool BOOL_TYPE;
 typedef unsigned char UCHAR_TYPE;
 typedef int INT_TYPE;
@@ -465,5 +465,6 @@ fp_vector interpolate_time(const fp_vector &time, bool hj_version = false);
 void apply_tick(KTC_Result &res, const fp_vector &trade_prices);
 fp_vector get_midpoint(const fp_vector &ask_time, const fp_vector &bid_time, const fp_vector &ask_price, const fp_vector &bid_price, const fp_vector &trades_time);
 fp_vector get_lastquote(const fp_vector &quotes_time, const fp_vector &quotes_price, const fp_vector &trades_time);
+fp_vector outerJoin(const fp_vector &lastask, const fp_vector &lastbid);
 
 #endif // UPB_TC_UTILS_H_
