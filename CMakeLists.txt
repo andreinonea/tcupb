@@ -26,7 +26,12 @@ FetchContent_MakeAvailable(DataFrame)
 
 find_package(Boost)
 
-add_library("${PROJECT_NAME}")
+add_library("${PROJECT_NAME}"
+		Emo.cpp
+		Emo.h
+		Clnv.cpp
+		Clnv.h
+)
 target_sources("${PROJECT_NAME}" PRIVATE
 	BulkVolume.cpp
 	FullInformation.cpp
