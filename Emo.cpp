@@ -24,7 +24,7 @@ KTC_Emo::Result KTC_Emo::classify(	const KTC_Data &trades,
     fp_vector lastbid = get_lastquote(bid_time, bid.price, trades_time_unique);
 
     fp_vector
-        ask_bid_join = outerJoin(lastask, lastbid);
+        ask_bid_join = outer_join(lastask, lastbid);
     fp_vector ask_bid = vec_merge_left(trades_time, ask_bid_join, trades_time_unique);
 
     fp_vector mask(ask_bid);
@@ -33,8 +33,8 @@ KTC_Emo::Result KTC_Emo::classify(	const KTC_Data &trades,
     for(size_t i = 0; i < ask_price.size(); i++){
         mask[i] = ask_price[i] <= bid_price[i];
         if (mask[i]) {
-            ask_price[i] = NAN;
-            bid_price[i] = NAN;
+            ask_price[i] = fp_nan();
+            bid_price[i] = fp_nan();
         }
     }
 
