@@ -10,7 +10,7 @@
 
 #include "csv.h"
 #include "Utils.h"
-#include "Emo.h"
+#include "FullInformation.h"
 
 using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
@@ -172,7 +172,7 @@ main(int argc, char **argv)
 			load_quotes_from_csv(ask, bid, m.second.c_str());
 
 			// TODO: loop through each algorithm unless flag is given with specific?
-			KTC_Result res = KTC_Emo::classify(trades,ask, bid, true);
+            KTC_Result res = KTC_FiAlgo::classify(KTC_FiAlgoVersion::DS_3, trades, ask, bid, 0.6);
 
 			INT_TYPE isize = res.initiator.size();
 			INT_TYPE ssize = res.step.size();

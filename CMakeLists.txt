@@ -28,9 +28,7 @@ find_package(Boost)
 
 add_library("${PROJECT_NAME}"
 		Emo.cpp
-		Emo.h
 		Clnv.cpp
-		Clnv.h
 )
 target_sources("${PROJECT_NAME}" PRIVATE
 	BulkVolume.cpp
@@ -51,7 +49,7 @@ target_link_libraries("${PROJECT_NAME}" PRIVATE
 
 add_executable("${PROJECT_NAME}-cli")
 target_sources("${PROJECT_NAME}-cli" PRIVATE
-	cli.cpp
+		example.cpp
 )
 
 target_link_libraries("${PROJECT_NAME}-cli" PRIVATE

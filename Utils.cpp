@@ -203,8 +203,9 @@ get_lastquote(
     return last_quote;
 }
 
-fp_vector outerJoin(const fp_vector &lastask, const fp_vector &lastbid) {
-    // The size of the two vectors is assumed to be the same
+fp_vector outer_join(const fp_vector &lastask, const fp_vector &lastbid) {
+    assert(lastask.size() == lastbid.size());
+
     size_t size = lastask.size();
 
     fp_vector result(size);
