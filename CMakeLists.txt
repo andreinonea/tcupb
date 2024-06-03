@@ -26,12 +26,11 @@ FetchContent_MakeAvailable(DataFrame)
 
 find_package(Boost)
 
-add_library("${PROJECT_NAME}"
-		Emo.cpp
-		Clnv.cpp
-)
+add_library("${PROJECT_NAME}")
 target_sources("${PROJECT_NAME}" PRIVATE
 	BulkVolume.cpp
+	Clnv.cpp
+	Emo.cpp
 	FullInformation.cpp
 	LeeReady.cpp
 	Utils.cpp
@@ -47,16 +46,16 @@ target_link_libraries("${PROJECT_NAME}" PRIVATE
 	Boost::boost
 )
 
-add_executable("${PROJECT_NAME}-cli")
-target_sources("${PROJECT_NAME}-cli" PRIVATE
-		example.cpp
+add_executable("${PROJECT_NAME}-example")
+target_sources("${PROJECT_NAME}-example" PRIVATE
+	example.cpp
 )
 
-target_link_libraries("${PROJECT_NAME}-cli" PRIVATE
+target_link_libraries("${PROJECT_NAME}-example" PRIVATE
 	"${PROJECT_NAME}"
 	DataFrame
 )
-# target_include_directories("${PROJECT_NAME}-cli" PRIVATE
+# target_include_directories("${PROJECT_NAME}-example" PRIVATE
 # 	"${PROJECT_NAME_INCLUDE_DIR}"
 # )
 
@@ -65,7 +64,7 @@ install(TARGETS "${PROJECT_NAME}"
 	# PUBLIC_HEADER DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}"
 )
 
-install(TARGETS "${PROJECT_NAME}-cli"
+install(TARGETS "${PROJECT_NAME}-example"
 	RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
 )
 
