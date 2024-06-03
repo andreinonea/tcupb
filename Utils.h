@@ -9,11 +9,10 @@
 #include <unordered_set>
 #include <utility>
 #include <vector>
-// #include <map>
 
 // TODO: remove
 #include <iostream>
-#include <map>
+
 typedef bool BOOL_TYPE;
 typedef unsigned char UCHAR_TYPE;
 typedef int INT_TYPE;
